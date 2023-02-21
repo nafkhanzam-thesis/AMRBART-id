@@ -1,12 +1,26 @@
 # coding:utf-8
 import os
 import torch
+import pickle
 from datasets import load_dataset
 from dataclasses import dataclass
 from transformers.file_utils import PaddingStrategy
 from transformers.modeling_utils import PreTrainedModel
 from transformers.tokenization_utils_base import BatchEncoding, PreTrainedTokenizerBase
 from typing import Any, Callable, Dict, List, NewType, Optional, Tuple, Union
+
+
+def read_or_new_pickle(path, default_fn, no_cache=False):
+    if not no_cache and os.path.isfile(path):
+        with open(path, "rb") as f:
+            try:
+                return pickle.load(f)
+            except Exception as e:  # so many things could go wrong, can't be more specific.
+                print(e)
+    default = default_fn()
+    with open(path, "wb") as f:
+        pickle.dump(default, f)
+    return default
 
 
 class AMRDataSet(torch.nn.Module):
@@ -21,6 +35,7 @@ class AMRDataSet(torch.nn.Module):
         max_src_length=512,
         max_tgt_length=512,
         ignore_pad_token_for_loss=True,
+        no_cache=False,
     ):
         super().__init__()
         self.train_file = train_file
@@ -32,6 +47,7 @@ class AMRDataSet(torch.nn.Module):
         self.ignore_pad_token_for_loss = ignore_pad_token_for_loss
         self.max_src_length = max_src_length
         self.max_tgt_length = max_tgt_length
+        self.no_cache = no_cache
 
     def setup(self, stage="fit"):
         data_files = {}
@@ -128,18 +144,21 @@ class AMRDataSet(torch.nn.Module):
             model_inputs["Esrctgt_segids"] = Esrctgt_segids
             return model_inputs
 
-        self.train_dataset = datasets["train"].map(
+        if not os.path.exists('.cache'):
+            os.makedirs('.cache')
+
+        self.train_dataset = read_or_new_pickle(".cache/pre-train-train_dataset.pkl", lambda: datasets["train"].map(
             tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
-        )
+        ), no_cache=self.no_cache)
         print(f"ALL {len(self.train_dataset)} training instances")
-        self.valid_dataset = datasets["validation"].map(
+        self.valid_dataset = read_or_new_pickle(".cache/pre-train-valid_dataset.pkl", lambda: datasets["validation"].map(
             tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
-        )
+        ), no_cache=self.no_cache)
         print(f"ALL {len(self.valid_dataset)} validation instances")
 
-        self.test_dataset = datasets["test"].map(
+        self.test_dataset = read_or_new_pickle(".cache/pre-train-test_dataset.pkl", lambda: datasets["test"].map(
             tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
-        )
+        ), no_cache=self.no_cache)
         print(f"ALL {len(self.test_dataset)} test instances")
 
         print("Dataset Instance Example:", self.train_dataset[0])
