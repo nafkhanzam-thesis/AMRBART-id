@@ -836,7 +836,7 @@ def evaluate(
     return result
 
 
-def main():
+def main(args=None):
     parser = argparse.ArgumentParser()
 
     # Required parameters
@@ -1096,7 +1096,8 @@ def main():
         "--freeze_decoder", action="store_true", help="Whether to freeze decoder of the modele",
     )
 
-    args = parser.parse_args()
+    if args is None:
+        args = parser.parse_args()
 
     if args.model_type in ["bert", "roberta", "distilbert", "camembert"] and not args.mlm:
         raise ValueError(
