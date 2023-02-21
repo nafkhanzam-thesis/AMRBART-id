@@ -129,16 +129,16 @@ class AMRDataSet(torch.nn.Module):
             return model_inputs
 
         self.train_dataset = datasets["train"].map(
-            tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=8
+            tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
         )
         print(f"ALL {len(self.train_dataset)} training instances")
         self.valid_dataset = datasets["validation"].map(
-            tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=8
+            tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
         )
         print(f"ALL {len(self.valid_dataset)} validation instances")
 
         self.test_dataset = datasets["test"].map(
-            tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=8
+            tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
         )
         print(f"ALL {len(self.test_dataset)} test instances")
 
