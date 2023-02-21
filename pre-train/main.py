@@ -1,5 +1,8 @@
 import run_multitask_unified_pretraining
+import sys
 from argparse import Namespace
+
+model_name = sys.argv[1]
 
 args = Namespace(
   adam_epsilon=1e-08,
@@ -35,13 +38,13 @@ args = Namespace(
   mlm_text_plus_amr=True,
   mlm_text_plus_amr_short=False,
   mlm_text_short=False,
-  model_name_or_path='../models/tiny-mbart',
-  model_type='../models/tiny-mbart',
+  model_name_or_path=f'../models/{model_name}',
+  model_type=f'../models/{model_name}',
   max_steps=300000,
   no_cache=False,
   no_cuda=False,
   num_train_epochs=1000.0,
-  output_dir='../outputs/tiny-mbart',
+  output_dir=f'../outputs/{model_name}',
   overwrite_cache=False,
   overwrite_output_dir=True,
   per_gpu_eval_batch_size=1,
