@@ -159,7 +159,7 @@ def train(
         sampler=train_sampler,
         batch_size=args.train_batch_size,
         collate_fn=collate_fn,
-        num_workers=6,
+        num_workers=1,
     )
 
     if args.max_steps > 0:
@@ -664,7 +664,7 @@ def evaluate(
         sampler=eval_sampler,
         batch_size=args.eval_batch_size,
         collate_fn=collate_fn,
-        num_workers=4,
+        num_workers=1,
     )
 
     # multi-gpu evaluate
