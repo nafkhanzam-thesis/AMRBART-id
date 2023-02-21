@@ -1,11 +1,9 @@
 tensorboardX
-pillow
-pillow-simd
 h5py-cache
 configargparse
 sacrebleu
 rouge-score
-datasets==2.4.0
+datasets
 transformers
 nltk
 cached_property
@@ -21,5 +19,3 @@ sentencepiece
 sacremoses
 sentence-transformers
 evaluate
-scylla-driver
-python-dotenv
