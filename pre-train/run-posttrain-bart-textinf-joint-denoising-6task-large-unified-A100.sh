@@ -1,7 +1,7 @@
 RootDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-dataset=Giga
-DataPath=$RootDir/data/$dataset
+dataset=amrbart
+DataPath=$RootDir/../datasets/$dataset
 
 MODEL=$1
 interval=1
@@ -22,9 +22,9 @@ fi
 
 export HF_DATASETS_CACHE=$DataCache
 
-CUDA_VISIBLE_DEVICES=0,1 python -u -m torch.distributed.launch --nproc_per_node=2 run_multitask_unified_pretraining.py \
-  --train_file $DataPath/train.jsonl \
-  --val_file $DataPath/val.jsonl \
+CUDA_VISIBLE_DEVICES=0 python -u -m torch.distributed.launch --nproc_per_node=2 run_multitask_unified_pretraining.py \
+  --train_file $DataPath/pretrain.jsonl \
+  --val_file $DataPath/dev.jsonl \
   --test_file $DataPath/test.jsonl \
   --output_dir $outpath \
   --mlm \
@@ -47,7 +47,7 @@ CUDA_VISIBLE_DEVICES=0,1 python -u -m torch.distributed.launch --nproc_per_node=
   --learning_rate $lr \
   --joint_train_interval $interval \
   --warmup_steps 2500 \
-  --max_steps 100000 \
+  --max_steps 300000 \
   --logging_steps 1000 \
   --fp16 \
   --overwrite_output_dir 2>&1 | tee $outpath/run.log

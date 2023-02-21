@@ -32,7 +32,7 @@ import re
 import shutil
 from typing import Dict, List, Any, Tuple
 from data_interface.dataset import AMRDataSet, DataCollatorForSeq2Seq
-from model_interface.modeling_bart import BartForConditionalGeneration
+from transformers import MBartForConditionalGeneration as BartForConditionalGeneration
 from model_interface.tokenization_bart import AMRBartTokenizer
 
 import numpy as np
@@ -51,7 +51,9 @@ from common.utils import (
     save_dummy_batch,
 )
 
-os.environ["TOKENIZERS_PARALLELISM"] = "true"
+#! Change again later
+# os.environ["TOKENIZERS_PARALLELISM"] = "true"
+os.environ["TOKENIZERS_PARALLELISM"] = "false"
 from transformers import (
     WEIGHTS_NAME,
     AdamW,
@@ -206,13 +208,14 @@ def train(
         scheduler.load_state_dict(torch.load(os.path.join(args.model_name_or_path, "scheduler.pt")))
 
     if args.fp16:
-        try:
-            from apex import amp
-        except ImportError:
-            raise ImportError(
-                "Please install apex from https://www.github.com/nvidia/apex to use fp16 training."
-            )
-        model, optimizer = amp.initialize(model, optimizer, opt_level=args.fp16_opt_level)
+        # try:
+        #     from apex import amp
+        # except ImportError:
+        #     raise ImportError(
+        #         "Please install apex from https://www.github.com/nvidia/apex to use fp16 training."
+        #     )
+        # model, optimizer = amp.initialize(model, optimizer, opt_level=args.fp16_opt_level)
+        model.half()
 
     # multi-gpu training (should be after apex fp16 initialization)
     if args.n_gpu > 1:
@@ -510,11 +513,12 @@ def train(
             # loss += fisher_loss
             epoch_iterator.set_postfix(lm_loss=loss.item(), lr=scheduler.get_lr()[0])
 
-            if args.fp16:
-                with amp.scale_loss(loss, optimizer) as scaled_loss:
-                    scaled_loss.backward()
-            else:
-                loss.backward()
+            # if args.fp16:
+            #     with amp.scale_loss(loss, optimizer) as scaled_loss:
+            #         scaled_loss.backward()
+            # else:
+            #     loss.backward()
+            loss.backward()
 
             epoch_step += 1
             tr_loss += loss.item()
@@ -522,10 +526,11 @@ def train(
             # tr_fisher_loss += fisher_loss.item()
 
             if (step + 1) % args.gradient_accumulation_steps == 0:
-                if args.fp16:
-                    torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), args.max_grad_norm)
-                else:
-                    torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+                # if args.fp16:
+                #     torch.nn.utils.clip_grad_norm_(amp.master_params(optimizer), args.max_grad_norm)
+                # else:
+                #     torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+                torch.nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
                 optimizer.step()
                 scheduler.step()  # Update learning rate schedule
                 model.zero_grad()
