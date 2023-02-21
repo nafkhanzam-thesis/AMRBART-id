@@ -32,7 +32,7 @@ import re
 import shutil
 from typing import Dict, List, Any, Tuple
 from data_interface.dataset import AMRDataSet, DataCollatorForSeq2Seq
-from transformers import MBartForConditionalGeneration as BartForConditionalGeneration
+from model_interface.modeling_bart import MBartForConditionalGeneration as BartForConditionalGeneration
 from model_interface.tokenization_bart import AMRBartTokenizer
 
 import numpy as np
@@ -690,10 +690,10 @@ def evaluate(
                     batch, tokenizer, mlm_prob=0.35
                 )
 
-                masked_input = masked_input.to("cuda:0")
-                attention_mask = attention_mask.to("cuda:0")
-                labels = labels.to("cuda:0")
-                dec_input = dec_input.to("cuda:0")
+                masked_input = masked_input.to(args.device)
+                attention_mask = attention_mask.to(args.device)
+                labels = labels.to(args.device)
+                dec_input = dec_input.to(args.device)
                 outputs = model(
                     input_ids=masked_input,
                     attention_mask=attention_mask,
@@ -711,10 +711,10 @@ def evaluate(
                     batch, tokenizer, mlm_prob=0.35
                 )
 
-                masked_input = masked_input.to("cuda:0")
-                attention_mask = attention_mask.to("cuda:0")
-                labels = labels.to("cuda:0")
-                dec_input = dec_input.to("cuda:0")
+                masked_input = masked_input.to(args.device)
+                attention_mask = attention_mask.to(args.device)
+                labels = labels.to(args.device)
+                dec_input = dec_input.to(args.device)
                 outputs = model(
                     input_ids=masked_input,
                     attention_mask=attention_mask,
@@ -730,10 +730,10 @@ def evaluate(
                 masked_input, attention_mask, dec_input, labels = get_PTPG2partial(
                     batch, tokenizer, inp="text"
                 )
-                masked_input = masked_input.to("cuda:0")
-                attention_mask = attention_mask.to("cuda:0")
-                labels = labels.to("cuda:0")
-                dec_input = dec_input.to("cuda:0")
+                masked_input = masked_input.to(args.device)
+                attention_mask = attention_mask.to(args.device)
+                labels = labels.to(args.device)
+                dec_input = dec_input.to(args.device)
                 outputs = model(
                     input_ids=masked_input,
                     attention_mask=attention_mask,
@@ -749,10 +749,10 @@ def evaluate(
                 masked_input, attention_mask, dec_input, labels = get_PTPG2partial(
                     batch, tokenizer, inp="amr"
                 )
-                masked_input = masked_input.to("cuda:0")
-                attention_mask = attention_mask.to("cuda:0")
-                labels = labels.to("cuda:0")
-                dec_input = dec_input.to("cuda:0")
+                masked_input = masked_input.to(args.device)
+                attention_mask = attention_mask.to(args.device)
+                labels = labels.to(args.device)
+                dec_input = dec_input.to(args.device)
                 outputs = model(
                     input_ids=masked_input,
                     attention_mask=attention_mask,
@@ -768,10 +768,10 @@ def evaluate(
                 masked_input, attention_mask, dec_input, labels = get_MTMG2partial(
                     batch, tokenizer, inp="text", mlm_prob=mlm_prob
                 )
-                masked_input = masked_input.to("cuda:0")
-                attention_mask = attention_mask.to("cuda:0")
-                labels = labels.to("cuda:0")
-                dec_input = dec_input.to("cuda:0")
+                masked_input = masked_input.to(args.device)
+                attention_mask = attention_mask.to(args.device)
+                labels = labels.to(args.device)
+                dec_input = dec_input.to(args.device)
                 outputs = model(
                     input_ids=masked_input,
                     attention_mask=attention_mask,
@@ -787,10 +787,10 @@ def evaluate(
                 masked_input, attention_mask, dec_input, labels = get_MTMG2partial(
                     batch, tokenizer, inp="amr", mlm_prob=mlm_prob
                 )
-                masked_input = masked_input.to("cuda:0")
-                attention_mask = attention_mask.to("cuda:0")
-                labels = labels.to("cuda:0")
-                dec_input = dec_input.to("cuda:0")
+                masked_input = masked_input.to(args.device)
+                attention_mask = attention_mask.to(args.device)
+                labels = labels.to(args.device)
+                dec_input = dec_input.to(args.device)
                 outputs = model(
                     input_ids=masked_input,
                     attention_mask=attention_mask,
@@ -806,10 +806,10 @@ def evaluate(
                 masked_input, attention_mask, dec_input, labels = get_MTMG2TG(
                     batch, tokenizer, mlm_prob=mlm_prob
                 )
-                masked_input = masked_input.to("cuda:0")
-                attention_mask = attention_mask.to("cuda:0")
-                labels = labels.to("cuda:0")
-                dec_input = dec_input.to("cuda:0")
+                masked_input = masked_input.to(args.device)
+                attention_mask = attention_mask.to(args.device)
+                labels = labels.to(args.device)
+                dec_input = dec_input.to(args.device)
                 outputs = model(
                     input_ids=masked_input,
                     attention_mask=attention_mask,

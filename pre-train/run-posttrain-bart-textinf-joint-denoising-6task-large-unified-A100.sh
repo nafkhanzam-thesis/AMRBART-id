@@ -10,7 +10,7 @@ lr=5e-5
 
 model_size="large"
 
-outpath=output/${dataset}-bart-${model_size}-Unifiedtextinf-JointDenoise-6task-${lr}-AMREOS
+outpath=$RootDir/../outputs/${dataset}-bart-${model_size}-Unifiedtextinf-JointDenoise-6task-${lr}-AMREOS
 DataCache=$DataPath/.cache
 
 mkdir -p $outpath
@@ -22,7 +22,7 @@ fi
 
 export HF_DATASETS_CACHE=$DataCache
 
-CUDA_VISIBLE_DEVICES=0 python -u -m torch.distributed.launch --nproc_per_node=2 run_multitask_unified_pretraining.py \
+CUDA_VISIBLE_DEVICES=0 python -u run_multitask_unified_pretraining.py \
   --train_file $DataPath/pretrain.jsonl \
   --val_file $DataPath/dev.jsonl \
   --test_file $DataPath/test.jsonl \
@@ -49,5 +49,4 @@ CUDA_VISIBLE_DEVICES=0 python -u -m torch.distributed.launch --nproc_per_node=2 
   --warmup_steps 2500 \
   --max_steps 300000 \
   --logging_steps 1000 \
-  --fp16 \
   --overwrite_output_dir 2>&1 | tee $outpath/run.log

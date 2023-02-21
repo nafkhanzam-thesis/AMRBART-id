@@ -1,34 +1,42 @@
 import run_multitask_unified_pretraining
 import sys
 import os
+import torch
 from argparse import Namespace
 
 model_name = sys.argv[1]
+is_gpu = len(sys.argv) >= 3 and sys.argv[2].lower() != 'cpu'
 
 output_dir = f'../outputs/{model_name}'
 os.makedirs(output_dir, exist_ok=True)
+
+torch.set_num_threads(1)
+
+batch_size = 6
 
 args = Namespace(
   adam_epsilon=1e-08,
   block_size=512,
   cache_dir=None,
   config_name=None,
+  device='gpu' if is_gpu else 'cpu',
   do_eval=True,
   do_train=True,
   eval_all_checkpoints=False,
   evaluate_during_training=True,
-  fp16=False,
+  fp16=is_gpu,
   fp16_opt_level='O1',
   freeze_decoder=False,
   freeze_embeds=False,
   freeze_encoder=False,
-  gradient_accumulation_steps=1,
+  gradient_accumulation_steps=batch_size,
   joint_train_interval=1,
   learning_rate=5e-05,
   line_by_line=False,
   local_rank=-1,
   logging_steps=1000,
   max_grad_norm=1.0,
+  max_steps=300000,
   mlm=True,
   mlm_amr=True,
   mlm_amr_plus_text=True,
@@ -43,16 +51,14 @@ args = Namespace(
   mlm_text_plus_amr_short=False,
   mlm_text_short=False,
   model_name_or_path=f'../models/{model_name}',
-  model_type=f'../models/{model_name}',
-  max_steps=300000,
-  no_cache=False,
+  model_type='facebook/mbart-large-50',
   no_cuda=False,
-  num_train_epochs=1000.0,
+  num_train_epochs=1,
   output_dir=output_dir,
   overwrite_cache=False,
   overwrite_output_dir=True,
-  per_gpu_eval_batch_size=1,
-  per_gpu_train_batch_size=1,
+  per_gpu_eval_batch_size=batch_size,
+  per_gpu_train_batch_size=batch_size,
   save_steps=500,
   save_total_limit=2,
   seed=42,
@@ -65,7 +71,7 @@ args = Namespace(
   train_file='../../datasets/amrbart/pretrain.jsonl',
   val_file='../../datasets/amrbart/dev.jsonl',
   warmup_steps=2500,
-  weight_decay=0.0,
+  weight_decay=0.0
 )
 
 run_multitask_unified_pretraining.main(args)
