@@ -13,9 +13,6 @@ wget https://storage.nafkhanzam.com/thesis/backups/mbart-en-id.tar.gz
 tar -xvzf mbart-en-id.tar.gz
 popd
 
-mkdir -p outputs/tiny-mbart
-mkdir -p outputs/MBart-en-id
-
 mkdir datasets
 pushd datasets
 wget https://storage.nafkhanzam.com/thesis/backups/amrbart-splitted.tar.gz

@@ -1,8 +1,12 @@
 import run_multitask_unified_pretraining
 import sys
+import os
 from argparse import Namespace
 
 model_name = sys.argv[1]
+
+output_dir = f'../outputs/{model_name}'
+os.makedirs(output_dir, exist_ok=True)
 
 args = Namespace(
   adam_epsilon=1e-08,
@@ -13,7 +17,7 @@ args = Namespace(
   do_train=True,
   eval_all_checkpoints=False,
   evaluate_during_training=True,
-  fp16=True,
+  fp16=False,
   fp16_opt_level='O1',
   freeze_decoder=False,
   freeze_embeds=False,
@@ -44,7 +48,7 @@ args = Namespace(
   no_cache=False,
   no_cuda=False,
   num_train_epochs=1000.0,
-  output_dir=f'../outputs/{model_name}',
+  output_dir=output_dir,
   overwrite_cache=False,
   overwrite_output_dir=True,
   per_gpu_eval_batch_size=1,
