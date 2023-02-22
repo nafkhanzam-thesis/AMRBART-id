@@ -558,7 +558,7 @@ def train(
                             args, eval_dataset, collate_fn, model, tokenizer, config=config
                         )
                         cur_score = results["perplexity"].item()
-                        if cur_score < best_score:
+                        if cur_score < best_score or True:
                             best_score = cur_score
                             checkpoint_prefix = "checkpoint"
                             # Save model checkpoint
