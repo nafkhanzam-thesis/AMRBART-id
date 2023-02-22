@@ -4,13 +4,13 @@ import sys
 import penman
 import itertools
 import regex as re
-from transformers import MBart50Tokenizer as BartTokenizer
+from .tokenization_mbart50 import MBart50Tokenizer
 from common import postprocessing
 from common.penman_interface import encode
 from common.constant import raw_special_tokens, recategorizations
 
 
-class AMRBartTokenizer(BartTokenizer):
+class AMRBartTokenizer(MBart50Tokenizer):
     INIT = 'Ġ'
 
     def __init__(self,

@@ -37,6 +37,7 @@ There are three features:
 
 _SRC = "amr"
 _TGT = "text"
+_LANG = "lang"
 
 
 class AMRData(datasets.GeneratorBasedBuilder):
@@ -51,6 +52,7 @@ class AMRData(datasets.GeneratorBasedBuilder):
                 {
                     _SRC: datasets.Value("string"),
                     _TGT: datasets.Value("string"),
+                    _LANG: datasets.Value("string"),
                 }
             ),
             supervised_keys=None,
@@ -79,4 +81,5 @@ class AMRData(datasets.GeneratorBasedBuilder):
                 json_dict = json.loads(line)
                 src = json_dict["amr"]
                 tgt = json_dict["sent"]
-                yield idx, {_SRC: src, _TGT: tgt}
+                lang = json_dict["lang"]
+                yield idx, {_SRC: src, _TGT: tgt, _LANG: lang}
