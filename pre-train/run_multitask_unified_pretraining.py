@@ -169,6 +169,7 @@ def train(
         )
     else:
         t_total = len(train_dataloader) // args.gradient_accumulation_steps * args.num_train_epochs
+        args.max_steps = t_total
 
     model = (
         model.module if hasattr(model, "module") else model
@@ -1230,6 +1231,7 @@ def main(args=None):
         pad_to_max_length=False,
         max_src_length=args.block_size,
         max_tgt_length=256,
+        output_dir=args.output_dir,
     )
     AMRdataset.setup()
 

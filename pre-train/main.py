@@ -7,6 +7,8 @@ from argparse import Namespace
 model_name = sys.argv[1]
 is_gpu = len(sys.argv) >= 3 and sys.argv[2].lower() != 'cpu'
 
+dataset_dir = '../../datasets/amrbart-test'
+
 output_dir = f'../outputs/{model_name}'
 os.makedirs(output_dir, exist_ok=True)
 
@@ -36,7 +38,7 @@ args = Namespace(
   local_rank=-1,
   logging_steps=1000,
   max_grad_norm=1.0,
-  max_steps=300000,
+  max_steps=0,
   mlm=True,
   mlm_amr=True,
   mlm_amr_plus_text=True,
@@ -66,10 +68,10 @@ args = Namespace(
   server_port='',
   should_continue=False,
   smart_init=False,
-  test_file='../../datasets/amrbart/test.jsonl',
+  test_file=f'{dataset_dir}/test.jsonl',
   tokenizer_name=None,
-  train_file='../../datasets/amrbart/pretrain.jsonl',
-  val_file='../../datasets/amrbart/dev.jsonl',
+  train_file=f'{dataset_dir}/pretrain.jsonl',
+  val_file=f'{dataset_dir}/dev.jsonl',
   warmup_steps=2500,
   weight_decay=0.0
 )

@@ -37,9 +37,6 @@ class AMRBartTokenizer(BartTokenizer):
             r""" ?<[a-z]+:?\d*>| ?:[^\s]+|'s|'t|'re|'ve|'m|'ll|'d| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+""")
         self.remove_pars = False
 
-        # ~ For compatibility
-        self.encoder = self.fairseq_tokens_to_ids
-
     @classmethod
     def from_pretrained(cls, pretrained_model_path, *args, **kwargs):
         inst = super().from_pretrained(pretrained_model_path, *args, **kwargs)
@@ -47,22 +44,21 @@ class AMRBartTokenizer(BartTokenizer):
         return inst
 
     def init_amr_vocabulary(self):
-        self.old_enc_size = old_enc_size = len(self.encoder)
-        tokens = [t for t in raw_special_tokens if t not in self.encoder]
-
-        for i, t in enumerate(tokens, start=old_enc_size):
-            self.encoder[t] = i
-
-        self.encoder = {k: i for i, (k, v) in enumerate(
-            sorted(self.encoder.items(), key=lambda x: x[1]))}
-        self.decoder = {v: k for k, v in sorted(
-            self.encoder.items(), key=lambda x: x[1])}
+        #~ Compatibilities from the original AMRBartTokenizer
+        vocab = super().get_vocab()
+        tokens = [t for t in raw_special_tokens if t not in vocab]
+        print(tokens)
+        super().add_tokens(tokens, special_tokens=True)
         self.modified = len(tokens)
+        self.vocab = self.get_vocab()
+        self.byte_encoder = bytes_to_unicode()
+        self.byte_decoder = {v: k for k, v in self.byte_encoder.items()}
+        #~
 
         self.amr_bos_token = "<AMR>"
-        self.amr_bos_token_id = self.encoder[self.amr_bos_token]
+        self.amr_bos_token_id = self._convert_token_to_id(self.amr_bos_token)
         self.amr_eos_token = "</AMR>"
-        self.amr_eos_token_id = self.encoder[self.amr_eos_token]
+        self.amr_eos_token_id = self._convert_token_to_id(self.amr_eos_token)
         print(f"Added {self.modified} AMR tokens")
 
     def _tokenize(self, text):
@@ -71,7 +67,7 @@ class AMRBartTokenizer(BartTokenizer):
         for tok_span in text.lstrip().split(' '):
             tok_span = tok_span.strip()
             recats = tok_span.rsplit('_', 1)
-            if len(recats) == 2 and recats[0] in self.recategorizations and ('_' + recats[1]) in self.encoder:
+            if len(recats) == 2 and recats[0] in self.recategorizations and ('_' + recats[1]) in self.vocab:
                 bpe_tokens.extend([self.INIT + recats[0], '_' + recats[1]])
             else:
                 return super()._tokenize(text)
@@ -82,7 +78,7 @@ class AMRBartTokenizer(BartTokenizer):
         tokk = []
         tok = token.strip()
         recats = tok.rsplit('_', 1)
-        if len(recats) == 2 and recats[0] in self.recategorizations and ('_' + recats[1]) in self.encoder:
+        if len(recats) == 2 and recats[0] in self.recategorizations and ('_' + recats[1]) in self.vocab:
             tokk.extend([self.INIT + recats[0], '_' + recats[1]])
         else:
             #! Not sure.
@@ -90,14 +86,14 @@ class AMRBartTokenizer(BartTokenizer):
             # for tok in self.patterns.findall(' ' + token):
             #     tok = "".join(
             #         self.byte_encoder[b] for b in tok.encode("utf-8"))
-            #     toks = self.bpe(tok).split(' ')
+            #     toks = self.tokenize(tok)
             #     tokk.extend(toks)
         return tokk
 
     def tokenize_amr(self, amr_tokens):
         bpe_tokens = []
         for i, tokk in enumerate(amr_tokens):
-            is_in_enc = self.INIT + tokk in self.encoder
+            is_in_enc = self.INIT + tokk in self.vocab
             is_rel = tokk.startswith(':') and len(tokk) > 1
             is_spc = tokk.startswith('<') and tokk.endswith('>')
             is_of = tokk.startswith(':') and tokk.endswith('-of')
@@ -117,7 +113,7 @@ class AMRBartTokenizer(BartTokenizer):
                     bpe_toks = self._tok_bpe(tokk[:-3]) + [tokk[-3:]]
                 elif is_of:
                     rel = tokk[:-3]
-                    if self.INIT + rel in self.encoder:
+                    if self.INIT + rel in self.vocab:
                         bpe_toks = [self.INIT + rel, '-of']
                     else:
                         bpe_toks = [self.INIT + ':'] + \
@@ -138,8 +134,7 @@ class AMRBartTokenizer(BartTokenizer):
 
             bpe_tokens.append(bpe_toks)
         bpe_tokens = [b for bb in bpe_tokens for b in bb]
-        bpe_token_ids = [self.encoder.get(
-            b, self.unk_token_id) for b in bpe_tokens]
+        bpe_token_ids = [self._convert_token_to_id(b) for b in bpe_tokens]
         return bpe_token_ids
 
     def decode_amr(self, tokens, restore_name_ops=None):
@@ -481,3 +476,31 @@ class AMRBartTokenizer(BartTokenizer):
             return "INST"
         else:
             return 'CONST'
+
+
+from functools import lru_cache
+
+
+@lru_cache()
+def bytes_to_unicode():
+    """
+    Returns list of utf-8 byte and a mapping to unicode strings. We specifically avoids mapping to whitespace/control
+    characters the bpe code barfs on.
+
+    The reversible bpe codes work on unicode strings. This means you need a large # of unicode characters in your vocab
+    if you want to avoid UNKs. When you're at something like a 10B token dataset you end up needing around 5K for
+    decent coverage. This is a significant percentage of your normal, say, 32K bpe vocab. To avoid that, we want lookup
+    tables between utf-8 bytes and unicode strings.
+    """
+    bs = (
+        list(range(ord("!"), ord("~") + 1)) + list(range(ord("¡"), ord("¬") + 1)) + list(range(ord("®"), ord("ÿ") + 1))
+    )
+    cs = bs[:]
+    n = 0
+    for b in range(2**8):
+        if b not in bs:
+            bs.append(b)
+            cs.append(2**8 + n)
+            n += 1
+    cs = [chr(n) for n in cs]
+    return dict(zip(bs, cs))

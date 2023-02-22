@@ -39,11 +39,11 @@ def decode_into_node_and_backreferences(subtoken_ids, tokenizer):
     subtoken_ids.insert(-1, 4839)       # add ")" id
 
     # get strings
-    subtokens = [tokenizer.decoder.get(t) for t in subtoken_ids]
+    subtokens = [tokenizer._convert_id_to_token(t) for t in subtoken_ids]
     # print("subtokens:", subtokens)
     # fix backreferences
     
-    subtoken_backreferences = [max(t - len(tokenizer.encoder), -1) for t in subtoken_ids]
+    subtoken_backreferences = [max(t - len(tokenizer.vocab), -1) for t in subtoken_ids]
     # strip padding
     subtokens, subtoken_backreferences = zip(
         *[

@@ -36,6 +36,7 @@ class AMRDataSet(torch.nn.Module):
         max_tgt_length=512,
         ignore_pad_token_for_loss=True,
         no_cache=False,
+        output_dir='.',
     ):
         super().__init__()
         self.train_file = train_file
@@ -48,6 +49,7 @@ class AMRDataSet(torch.nn.Module):
         self.max_src_length = max_src_length
         self.max_tgt_length = max_tgt_length
         self.no_cache = no_cache
+        self.output_dir = output_dir
 
     def setup(self, stage="fit"):
         data_files = {}
@@ -144,19 +146,20 @@ class AMRDataSet(torch.nn.Module):
             model_inputs["Esrctgt_segids"] = Esrctgt_segids
             return model_inputs
 
-        if not os.path.exists('.cache'):
-            os.makedirs('.cache')
+        cache_dir = os.path.join(self.output_dir, '.cache')
+        if not os.path.exists(cache_dir):
+            os.makedirs(cache_dir)
 
-        self.train_dataset = read_or_new_pickle(".cache/pre-train-train_dataset.pkl", lambda: datasets["train"].map(
+        self.train_dataset = read_or_new_pickle(os.path.join(cache_dir, "pre-train-train_dataset.pkl"), lambda: datasets["train"].map(
             tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
         ), no_cache=self.no_cache)
         print(f"ALL {len(self.train_dataset)} training instances")
-        self.valid_dataset = read_or_new_pickle(".cache/pre-train-valid_dataset.pkl", lambda: datasets["validation"].map(
+        self.valid_dataset = read_or_new_pickle(os.path.join(cache_dir, "pre-train-valid_dataset.pkl"), lambda: datasets["validation"].map(
             tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
         ), no_cache=self.no_cache)
         print(f"ALL {len(self.valid_dataset)} validation instances")
 
-        self.test_dataset = read_or_new_pickle(".cache/pre-train-test_dataset.pkl", lambda: datasets["test"].map(
+        self.test_dataset = read_or_new_pickle(os.path.join(cache_dir, "pre-train-test_dataset.pkl"), lambda: datasets["test"].map(
             tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
         ), no_cache=self.no_cache)
         print(f"ALL {len(self.test_dataset)} test instances")
