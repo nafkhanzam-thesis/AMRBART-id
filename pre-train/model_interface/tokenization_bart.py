@@ -2,6 +2,7 @@
 # this is a simplified version of "https://github.com/SapienzaNLP/spring/blob/main/spring_amr/tokenization_bart.py"
 import sys
 import penman
+import itertools
 import regex as re
 from transformers import MBart50Tokenizer as BartTokenizer
 from common import postprocessing
@@ -45,9 +46,8 @@ class AMRBartTokenizer(BartTokenizer):
 
     def init_amr_vocabulary(self):
         #~ Compatibilities from the original AMRBartTokenizer
-        vocab = super().get_vocab()
-        tokens = [t for t in raw_special_tokens if t not in vocab]
-        print(tokens)
+        self.vocab = self.get_vocab()
+        tokens = [t for t in raw_special_tokens if t not in self.vocab]
         super().add_tokens(tokens, special_tokens=True)
         self.modified = len(tokens)
         self.vocab = self.get_vocab()
@@ -56,9 +56,9 @@ class AMRBartTokenizer(BartTokenizer):
         #~
 
         self.amr_bos_token = "<AMR>"
-        self.amr_bos_token_id = self._convert_token_to_id(self.amr_bos_token)
+        self.amr_bos_token_id = self.vocab[self.amr_bos_token]
         self.amr_eos_token = "</AMR>"
-        self.amr_eos_token_id = self._convert_token_to_id(self.amr_eos_token)
+        self.amr_eos_token_id = self.vocab[self.amr_eos_token]
         print(f"Added {self.modified} AMR tokens")
 
     def _tokenize(self, text):
@@ -133,8 +133,8 @@ class AMRBartTokenizer(BartTokenizer):
                     bpe_toks = self._tok_bpe(tokk)
 
             bpe_tokens.append(bpe_toks)
-        bpe_tokens = [b for bb in bpe_tokens for b in bb]
-        bpe_token_ids = [self._convert_token_to_id(b) for b in bpe_tokens]
+        bpe_tokens = list(itertools.chain.from_iterable(bpe_tokens))
+        bpe_token_ids = [self.vocab.get(b, self.unk_token_id) for b in bpe_tokens]
         return bpe_token_ids
 
     def decode_amr(self, tokens, restore_name_ops=None):
