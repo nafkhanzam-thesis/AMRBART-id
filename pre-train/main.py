@@ -7,7 +7,7 @@ from argparse import Namespace
 model_name = sys.argv[1]
 is_gpu = len(sys.argv) >= 3 and sys.argv[2].lower() != 'cpu'
 
-dataset_dir = '../../datasets/amrbart-test'
+dataset_dir = '../../datasets/amrbart'
 
 output_dir = f'../outputs/{model_name}'
 os.makedirs(output_dir, exist_ok=True)
@@ -22,10 +22,10 @@ args = Namespace(
   cache_dir=None,
   config_name=None,
   device='gpu' if is_gpu else 'cpu',
-  do_eval=True,
+  do_eval=False,
   do_train=True,
   eval_all_checkpoints=False,
-  evaluate_during_training=True,
+  evaluate_during_training=False,
   fp16=is_gpu,
   fp16_opt_level='O1',
   freeze_decoder=False,
