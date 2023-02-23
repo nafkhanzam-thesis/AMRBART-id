@@ -153,7 +153,7 @@ class AMRDataSet(torch.nn.Module):
             model_inputs["Esrctgt_segids"] = Esrctgt_segids
             return model_inputs
 
-        cache_dir = os.path.join(self.output_dir, '.cache')
+        cache_dir = os.path.join('.cache')
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
 
