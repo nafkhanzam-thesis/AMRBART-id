@@ -519,7 +519,7 @@ def train(
             #         fisher_loss += fisher_loss_p.sum()
             # epoch_iterator.set_postfix(lm_loss=loss.item(), fisher_loss=fisher_loss.item(), lr=scheduler.get_lr()[0])
             # loss += fisher_loss
-            epoch_iterator.set_postfix(lm_loss=loss.item(), lr=scheduler.get_lr()[0])
+            epoch_iterator.set_postfix(lm_loss=loss.item(), lr=scheduler.get_last_lr())
 
             # if args.fp16:
             #     with amp.scale_loss(loss, optimizer) as scaled_loss:
@@ -588,7 +588,7 @@ def train(
 
                         for key, value in results.items():
                             tb_writer.add_scalar("eval_{}".format(key), value, global_step)
-                    tb_writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
+                    tb_writer.add_scalar("lr", scheduler.get_last_lr(), global_step)
                     tb_writer.add_scalar(
                         "loss", (tr_loss - logging_loss) / args.logging_steps, global_step
                     )
