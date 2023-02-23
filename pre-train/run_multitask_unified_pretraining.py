@@ -259,7 +259,7 @@ def train(
             epochs_trained = global_step // (
                 len(train_dataloader) // args.gradient_accumulation_steps
             )
-            steps_trained_in_current_epoch = global_step % (
+            steps_trained_in_current_epoch = (global_step * args.gradient_accumulation_steps) % (
                 len(train_dataloader) // args.gradient_accumulation_steps
             )
 
