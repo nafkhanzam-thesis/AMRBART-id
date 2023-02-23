@@ -120,7 +120,7 @@ class AMRDataSet(torch.nn.Module):
             ]  # [<s> x1,x2...,xn <\s> <AMR> [mask] </AMR>]
             Esrctgt_ids = [
                 [
-                    self.tokenizer.bos_token_id,
+                    self.tokenizer.vocab["id_ID"],
                     self.tokenizer.mask_token_id,
                     self.tokenizer.eos_token_id,
                     self.tokenizer.amr_bos_token_id

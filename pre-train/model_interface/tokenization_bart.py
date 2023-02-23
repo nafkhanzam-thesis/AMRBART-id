@@ -48,7 +48,7 @@ class AMRBartTokenizer(MBart50Tokenizer):
         #~ Compatibilities from the original AMRBartTokenizer
         self.vocab = self.get_vocab()
         tokens = [t for t in raw_special_tokens if t not in self.vocab]
-        super().add_tokens(tokens, special_tokens=True)
+        super().add_tokens(tokens)
         self.modified = len(tokens)
         self.vocab = self.get_vocab()
         self.byte_encoder = bytes_to_unicode()
