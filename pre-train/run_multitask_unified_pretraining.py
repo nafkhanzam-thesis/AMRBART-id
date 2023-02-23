@@ -261,7 +261,7 @@ def train(
             )
             steps_trained_in_current_epoch = (global_step % (
                 len(train_dataloader) // args.gradient_accumulation_steps
-            ))* args.gradient_accumulation_steps
+            )) * args.gradient_accumulation_steps
 
             logger.info("  Continuing training from checkpoint, will skip to saved global_step")
             logger.info("  Continuing training from epoch %d", epochs_trained)

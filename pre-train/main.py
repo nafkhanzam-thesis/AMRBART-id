@@ -6,15 +6,18 @@ from argparse import Namespace
 
 model_name = sys.argv[1]
 is_gpu = len(sys.argv) >= 3 and sys.argv[2].lower() != 'cpu'
+should_continue = len(sys.argv) >= 4 and sys.argv[3].lower() == 'continue'
+print('is_gpu', is_gpu)
+print('should_continue', should_continue)
 
 dataset_dir = '../../datasets/amrbart'
 
 output_dir = f'../outputs/{model_name}'
 os.makedirs(output_dir, exist_ok=True)
 
-torch.set_num_threads(1)
+# torch.set_num_threads(1)
 
-batch_size = 6
+batch_size = 4
 
 args = Namespace(
   adam_epsilon=1e-08,
@@ -22,10 +25,10 @@ args = Namespace(
   cache_dir=None,
   config_name=None,
   device='gpu' if is_gpu else 'cpu',
-  do_eval=False,
+  do_eval=True,
   do_train=True,
   eval_all_checkpoints=False,
-  evaluate_during_training=False,
+  evaluate_during_training=True,
   fp16=is_gpu,
   fp16_opt_level='O1',
   freeze_decoder=False,
@@ -33,10 +36,10 @@ args = Namespace(
   freeze_encoder=False,
   gradient_accumulation_steps=batch_size,
   joint_train_interval=1,
-  learning_rate=5e-05,
+  learning_rate=5e-07,
   line_by_line=False,
   local_rank=-1,
-  logging_steps=1000,
+  logging_steps=2000,
   max_grad_norm=1.0,
   max_steps=0,
   mlm=True,
