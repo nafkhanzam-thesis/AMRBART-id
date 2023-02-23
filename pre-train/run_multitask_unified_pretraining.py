@@ -1130,6 +1130,7 @@ def main(args=None):
             raise ValueError("Used --should_continue but no checkpoint was found in --output_dir.")
         else:
             args.model_name_or_path = sorted_checkpoints[-1]
+            print("Found checkpoint:", args.model_name_or_path)
 
     if (
         os.path.exists(args.output_dir)
