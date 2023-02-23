@@ -523,13 +523,13 @@ def train(
             # epoch_iterator.set_postfix(lm_loss=loss.item(), lr=scheduler.get_last_lr()[0])
             epoch_iterator.set_postfix(
                 lm_loss=loss.mean().item(),
-                amr_loss=amr_loss.mean().item() if type(amr_loss) == int else amr_loss,
-                text_loss=text_loss.mean().item() if type(text_loss) == int else text_loss,
-                text_joint_loss=text_joint_loss.mean().item() if type(text_joint_loss) == int else text_joint_loss,
-                amr_joint_loss=amr_joint_loss.mean().item() if type(amr_joint_loss) == int else amr_joint_loss,
-                text_joint_loss2=text_joint_loss2.mean().item() if type(text_joint_loss2) == int else text_joint_loss2,
-                amr_joint_loss2=amr_joint_loss2.mean().item() if type(amr_joint_loss2) == int else amr_joint_loss2,
-                joint2joint_loss=joint2joint_loss.mean().item() if type(joint2joint_loss) == int else joint2joint_loss,
+                amr_loss=amr_loss.mean().item() if type(amr_loss) != int else amr_loss,
+                text_loss=text_loss.mean().item() if type(text_loss) != int else text_loss,
+                text_joint_loss=text_joint_loss.mean().item() if type(text_joint_loss) != int else text_joint_loss,
+                amr_joint_loss=amr_joint_loss.mean().item() if type(amr_joint_loss) != int else amr_joint_loss,
+                text_joint_loss2=text_joint_loss2.mean().item() if type(text_joint_loss2) != int else text_joint_loss2,
+                amr_joint_loss2=amr_joint_loss2.mean().item() if type(amr_joint_loss2) != int else amr_joint_loss2,
+                joint2joint_loss=joint2joint_loss.mean().item() if type(joint2joint_loss) != int else joint2joint_loss,
                 lr=scheduler.get_last_lr()[0],
             )
 
@@ -845,13 +845,13 @@ def evaluate(
 
             pbar.set_postfix(
                 lm_loss=loss.mean().item(),
-                amr_loss=amr_loss.mean().item() if type(amr_loss) == int else amr_loss,
-                text_loss=text_loss.mean().item() if type(text_loss) == int else text_loss,
-                text_joint_loss=text_joint_loss.mean().item() if type(text_joint_loss) == int else text_joint_loss,
-                amr_joint_loss=amr_joint_loss.mean().item() if type(amr_joint_loss) == int else amr_joint_loss,
-                text_joint_loss2=text_joint_loss2.mean().item() if type(text_joint_loss2) == int else text_joint_loss2,
-                amr_joint_loss2=amr_joint_loss2.mean().item() if type(amr_joint_loss2) == int else amr_joint_loss2,
-                joint2joint_loss=joint2joint_loss.mean().item() if type(joint2joint_loss) == int else joint2joint_loss,
+                amr_loss=amr_loss.mean().item() if type(amr_loss) != int else amr_loss,
+                text_loss=text_loss.mean().item() if type(text_loss) != int else text_loss,
+                text_joint_loss=text_joint_loss.mean().item() if type(text_joint_loss) != int else text_joint_loss,
+                amr_joint_loss=amr_joint_loss.mean().item() if type(amr_joint_loss) != int else amr_joint_loss,
+                text_joint_loss2=text_joint_loss2.mean().item() if type(text_joint_loss2) != int else text_joint_loss2,
+                amr_joint_loss2=amr_joint_loss2.mean().item() if type(amr_joint_loss2) != int else amr_joint_loss2,
+                joint2joint_loss=joint2joint_loss.mean().item() if type(joint2joint_loss) != int else joint2joint_loss,
             )
 
             eval_loss += loss.mean().item()
