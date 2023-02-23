@@ -523,13 +523,13 @@ def train(
             # epoch_iterator.set_postfix(lm_loss=loss.item(), lr=scheduler.get_last_lr()[0])
             epoch_iterator.set_postfix(
                 lm_loss=loss.mean().item(),
-                amr_loss=amr_loss,
-                text_loss=text_loss,
-                text_joint_loss=text_joint_loss,
-                amr_joint_loss=amr_joint_loss,
-                text_joint_loss2=text_joint_loss2,
-                amr_joint_loss2=amr_joint_loss2,
-                joint2joint_loss=joint2joint_loss,
+                amr_loss=amr_loss.mean(),
+                text_loss=text_loss.mean(),
+                text_joint_loss=text_joint_loss.mean(),
+                amr_joint_loss=amr_joint_loss.mean(),
+                text_joint_loss2=text_joint_loss2.mean(),
+                amr_joint_loss2=amr_joint_loss2.mean(),
+                joint2joint_loss=joint2joint_loss.mean(),
                 lr=scheduler.get_last_lr()[0],
             )
 
@@ -845,13 +845,13 @@ def evaluate(
 
             pbar.set_postfix(
                 lm_loss=loss.mean().item(),
-                amr_loss=amr_loss,
-                text_loss=text_loss,
-                text_joint_loss=text_joint_loss,
-                amr_joint_loss=amr_joint_loss,
-                text_joint_loss2=text_joint_loss2,
-                amr_joint_loss2=amr_joint_loss2,
-                joint2joint_loss=joint2joint_loss,
+                amr_loss=amr_loss.mean(),
+                text_loss=text_loss.mean(),
+                text_joint_loss=text_joint_loss.mean(),
+                amr_joint_loss=amr_joint_loss.mean(),
+                text_joint_loss2=text_joint_loss2.mean(),
+                amr_joint_loss2=amr_joint_loss2.mean(),
+                joint2joint_loss=joint2joint_loss.mean(),
             )
 
             eval_loss += loss.mean().item()
