@@ -42,7 +42,7 @@ from transformers.utils import (
     is_torch_tf32_available,
     is_torch_tpu_available,
     logging,
-    torch_required,
+    # torch_required,
 )
 
 
@@ -1249,7 +1249,7 @@ class TrainingArguments:
         return eval_batch_size
 
     @cached_property
-    @torch_required
+    # @torch_required
     def _setup_devices(self) -> "torch.device":
         logger.info("PyTorch: setting up devices")
         if torch.distributed.is_available() and torch.distributed.is_initialized() and self.local_rank == -1:
@@ -1349,7 +1349,7 @@ class TrainingArguments:
         return device
 
     @property
-    @torch_required
+    # @torch_required
     def device(self) -> "torch.device":
         """
         The device used by this process.
@@ -1357,7 +1357,7 @@ class TrainingArguments:
         return self._setup_devices
 
     @property
-    @torch_required
+    # @torch_required
     def n_gpu(self):
         """
         The number of GPUs used by this process.
@@ -1371,7 +1371,7 @@ class TrainingArguments:
         return self._n_gpu
 
     @property
-    @torch_required
+    # @torch_required
     def parallel_mode(self):
         """
         The current mode used for parallelism if multiple GPUs/TPU cores are available. One of:
@@ -1396,7 +1396,7 @@ class TrainingArguments:
             return ParallelMode.NOT_PARALLEL
 
     @property
-    @torch_required
+    # @torch_required
     def world_size(self):
         """
         The number of processes used in parallel.
@@ -1412,7 +1412,7 @@ class TrainingArguments:
         return 1
 
     @property
-    @torch_required
+    # @torch_required
     def process_index(self):
         """
         The index of the current process used.
@@ -1428,7 +1428,7 @@ class TrainingArguments:
         return 0
 
     @property
-    @torch_required
+    # @torch_required
     def local_process_index(self):
         """
         The index of the local process used.

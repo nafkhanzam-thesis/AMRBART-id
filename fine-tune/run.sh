@@ -2,7 +2,7 @@ export CUDA_VISIBLE_DEVICES=0
 RootDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 RootDir=$RootDir/..
 
-Dataset=amrbart
+Dataset=amrbart-test
 DataPath=$RootDir/datasets/$Dataset
 
 Model=$1
@@ -40,8 +40,8 @@ python -u main.py \
     --output_dir $OutputDir \
     --cache_dir $ModelCache \
     --data_cache_dir $DataCache \
-    --tokenizer_name "facebook/bart-large" \
-    --model_name_or_path $Model \
+    --tokenizer_name $RootDir/models/$Model \
+    --model_name_or_path $RootDir/models/$Model \
     --overwrite_output_dir \
     --unified_input True \
     --per_device_train_batch_size $batch_size \
@@ -59,7 +59,7 @@ python -u main.py \
     --generation_max_length 1024 \
     --generation_num_beams 5 \
     --label_smoothing_factor 0.1 \
-    --evaluation_strategy "epoch" \
+    --evaluation_strategy "steps" \
     --weight_decay 0.01 \
     --max_grad_norm 0 \
     --max_steps -1 \
