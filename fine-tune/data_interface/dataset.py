@@ -72,6 +72,13 @@ class AMRParsingDataSet(Dataset):
     def tokenize_function(self, examples):
         amr = examples["src"]  # AMR tokens
         txt = examples["tgt"]  # Text tokens
+        langs = examples["lang"]
+        del examples["lang"]
+        lang_mapper = {
+            'en': "en_XX",
+            'id': "id_ID",
+        }
+        txt = [lang_mapper[langs[i]] + inp for i, inp in enumerate(txt)]
 
         amr_ids = [self.tokenizer.tokenize_amr(itm.split())[:self.max_tgt_length-2] + [self.tokenizer.amr_eos_token_id] for itm in amr]
         

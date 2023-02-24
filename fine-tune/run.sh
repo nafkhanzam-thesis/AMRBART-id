@@ -13,13 +13,13 @@ OutputDir=${RootDir}/outputs/$Model-fine-tune
 
 if [ ! -d ${OutputDir} ];then
   mkdir -p ${OutputDir}
-else
-  read -p "${OutputDir} already exists, delete origin one [y/n]?" yn
-  case $yn in
-    [Yy]* ) rm -rf ${OutputDir}; mkdir -p ${OutputDir};;
-    [Nn]* ) echo "exiting..."; exit;;
-    * ) echo "Please answer yes or no.";;
-  esac
+# else
+#   read -p "${OutputDir} already exists, delete origin one [y/n]?" yn
+#   case $yn in
+#     [Yy]* ) rm -rf ${OutputDir}; mkdir -p ${OutputDir};;
+#     [Nn]* ) echo "exiting..."; exit;;
+#     * ) echo "Please answer yes or no.";;
+#   esac
 fi
 
 export HF_DATASETS_CACHE=$DataCache
