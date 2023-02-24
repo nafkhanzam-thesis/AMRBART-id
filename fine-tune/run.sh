@@ -42,11 +42,10 @@ python -u main.py \
     --data_cache_dir $DataCache \
     --tokenizer_name $RootDir/models/$Model \
     --model_name_or_path $RootDir/models/$Model \
-    --overwrite_output_dir \
     --unified_input True \
     --per_device_train_batch_size $batch_size \
     --per_device_eval_batch_size $batch_size \
-    --gradient_accumulation_steps 1 \
+    --gradient_accumulation_steps $batch_size \
     --learning_rate $lr \
     --optim "adamw_hf" \
     --lr_scheduler_type "polynomial" \
