@@ -32,6 +32,7 @@ lr=1e-6
 batch_size=5
 
 python -u main.py \
+    --overwrite_output_dir \
     --data_dir $DataPath \
     --task "text2amr" \
     --train_file $DataPath/train.jsonl \
