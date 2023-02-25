@@ -10,7 +10,7 @@ should_continue = len(sys.argv) >= 4 and sys.argv[3].lower() == 'continue'
 print('is_gpu', is_gpu)
 print('should_continue', should_continue)
 
-dataset_dir = '../../datasets/amrbart'
+dataset_dir = '../../datasets/amrbart-new'
 
 output_dir = f'../outputs/{model_name}'
 os.makedirs(output_dir, exist_ok=True)
