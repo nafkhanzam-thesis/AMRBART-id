@@ -2,7 +2,7 @@ export CUDA_VISIBLE_DEVICES=0
 RootDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 RootDir=$RootDir/..
 
-Dataset=amrbart
+Dataset=amrbart-new
 DataPath=$RootDir/datasets/$Dataset
 
 Model=$1

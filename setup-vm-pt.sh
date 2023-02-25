@@ -15,8 +15,8 @@ popd
 
 mkdir datasets
 pushd datasets
-  wget https://storage.nafkhanzam.com/thesis/backups/amrbart-splitted.tar.gz
-  tar -xvzf amrbart-splitted.tar.gz
+  wget https://storage.nafkhanzam.com/thesis/backups/amrbart-new.tar.gz
+  tar -xvzf amrbart-new.tar.gz
 popd
 
 pip install -r requirements.txt
