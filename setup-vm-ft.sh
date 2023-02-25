@@ -8,8 +8,14 @@ git lfs install
 
 mkdir models
 pushd models
+  #~ Pre-trained model
   wget https://storage.nafkhanzam.com/thesis/backups/mbart-en-id-smaller-pre-trained.tar.gz
   tar -xvzf mbart-en-id-smaller-pre-trained.tar.gz
+
+  #~ Fine-tuned model
+  epoch=1
+  wget https://storage.nafkhanzam.com/thesis/backups/mbart-en-id-smaller-pre-trained-fine-tune-e$epoch.tar.gz
+  tar -xvzf mbart-en-id-smaller-pre-trained-fine-tune-e$epoch.tar.gz
 popd
 
 mkdir datasets
