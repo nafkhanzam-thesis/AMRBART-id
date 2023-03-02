@@ -348,11 +348,6 @@ def main():
         with open(output_prediction_file, "w") as p_writer:
             p_writer.write("\n\n".join(pieces))
 
-        output_linearized_prediction_file = f"{training_args.output_dir}/val_outputs/{prefix}_generated_predictions_linearized_{global_step}.txt"
-        # write predictions and targets for later rouge evaluation.
-        with open(output_linearized_prediction_file, "w") as p_writer:
-            p_writer.write("\n".join(" ".join(preds)))
-
         try:
             smatch_score = calculate_smatch(
                 data_args.data_dir + f"/{prefix}-gold.amr", output_prediction_file
@@ -495,7 +490,7 @@ def main():
             if training_args.predict_with_generate:
                 predictions = tokenizer.batch_decode(
                     predict_results.predictions,
-                    skip_special_tokens=True,
+                    skip_special_tokens=False,
                     clean_up_tokenization_spaces=False,
                 )
                 output_prediction_file = os.path.join(
