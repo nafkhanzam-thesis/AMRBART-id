@@ -353,8 +353,9 @@ def main():
                 data_args.data_dir + f"/{prefix}-gold.amr", output_prediction_file
             )
         except BaseException as e:
+            print('An exception occurred on calculating smatch')
             print(e)
-            smatch_score = {"smatch": 0.0}
+            smatch_score = {"smatch": -42.0}
 
         result = {"smatch":smatch_score["smatch"]}
         prediction_lens = [np.count_nonzero(pred != tokenizer.pad_token_id) for pred in preds]
