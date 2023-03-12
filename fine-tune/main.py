@@ -289,6 +289,8 @@ def main():
 
         inputs = np.where(inputs != -100, inputs, tokenizer.pad_token_id)
         decoded_inputs = tokenizer.batch_decode(inputs, skip_special_tokens=True)
+        # print("decoded_inputs")
+        # print(decoded_inputs)
         # if data_args.ignore_pad_token_for_loss:
         #     # Replace -100 in the labels as we can't decode them.
         #     labels = np.where(labels != -100, labels, tokenizer.pad_token_id)
@@ -313,7 +315,7 @@ def main():
             ]
 
             graph, status, (lin, backr) = tokenizer.decode_amr(
-                ith_pred, restore_name_ops=False
+                ith_pred, restore_name_ops=False, prefix=prefix
             )
             graph.status = status
             graph.nodes = lin
@@ -491,7 +493,7 @@ def main():
             if training_args.predict_with_generate:
                 predictions = tokenizer.batch_decode(
                     predict_results.predictions,
-                    skip_special_tokens=False,
+                    skip_special_tokens=True,
                     clean_up_tokenization_spaces=False,
                 )
                 output_prediction_file = os.path.join(

@@ -4,6 +4,12 @@ import sys
 import penman
 import itertools
 import regex as re
+import traceback
+
+def get_traceback(e):
+    lines = traceback.format_exception(type(e), e, e.__traceback__)
+    return ''.join(lines)
+
 from .tokenization_mbart50 import MBart50Tokenizer
 from common import postprocessing
 from common.penman_interface import encode
@@ -137,42 +143,48 @@ class AMRBartTokenizer(MBart50Tokenizer):
         bpe_token_ids = [self.vocab.get(b, self.unk_token_id) for b in bpe_tokens]
         return bpe_token_ids
 
-    def decode_amr(self, tokens, restore_name_ops=None):
+    def decode_amr(self, tokens, restore_name_ops=None, prefix="unk"):
+        # print()
+        # print()
+        # # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        # print()
+        # print()
         try:
             nodes, backreferences = postprocessing.decode_into_node_and_backreferences(
                 tokens, self)
         except Exception as e:
-            print('Decoding failure:', file=sys.stderr)
-            print(e, file=sys.stderr)
+            print('Decoding failure', file=sys.stderr)
+            print(get_traceback(e), file=sys.stderr)
             return postprocessing.BACKOFF, postprocessing.ParsedStatus.BACKOFF, (None, None)
         try:
-            graph_ = graph = self._fix_and_make_graph(nodes)
+            graph = self._fix_and_make_graph(nodes)
             # if collapse_name_ops:
-            #     graph_ = graph = postprocessing._split_name_ops(graph)
+            #     graph = postprocessing._split_name_ops(graph)
         except Exception as e:
-            print('Building failure:', file=sys.stderr)
-            print(nodes, file=sys.stderr)
-            print(backreferences, file=sys.stderr)
-            print(e, file=sys.stderr)
+            print('Building failure', file=sys.stderr)
+            print(get_traceback(e), file=sys.stderr)
+            # print('nodes', nodes, file=sys.stderr)
+            # print('backreferences', backreferences, file=sys.stderr)
             return postprocessing.BACKOFF, postprocessing.ParsedStatus.BACKOFF, (None, None)
         try:
-            graph, status = postprocessing.connect_graph_if_not_connected(
-                graph)
+            graph, status = postprocessing.connect_graph_if_not_connected(graph)
             if status == postprocessing.ParsedStatus.BACKOFF:
                 print('Reconnection 1 failure:')
-                print(nodes, file=sys.stderr)
-                print(backreferences, file=sys.stderr)
-                print(graph_, file=sys.stderr)
+                # print('nodes', nodes, file=sys.stderr)
+                # print('backreferences', backreferences, file=sys.stderr)
+                # print('graph', graph, file=sys.stderr)
             return graph, status, (nodes, backreferences)
         except Exception as e:
-            print('Reconnction 2 failure:', file=sys.stderr)
-            print(e, file=sys.stderr)
-            print(nodes, file=sys.stderr)
-            print(backreferences, file=sys.stderr)
-            print(graph_, file=sys.stderr)
+            print('Reconnection 2 failure', file=sys.stderr)
+            print('e', e, file=sys.stderr)
+            # print('nodes', nodes, file=sys.stderr)
+            # print('backreferences', backreferences, file=sys.stderr)
+            # print('graph', graph, file=sys.stderr)
             return postprocessing.BACKOFF, postprocessing.ParsedStatus.BACKOFF, (nodes, backreferences)
 
     def _fix_and_make_graph(self, nodes):
+
+        # print(">>>>>>>> nodes1: ", nodes, "\n")
 
         nodes_ = []
         for n in nodes:
@@ -185,48 +197,55 @@ class AMRBartTokenizer(MBart50Tokenizer):
                 nodes_.append(n)
         nodes = nodes_
 
-        if True:
-            i = 0
-            nodes_ = []
-            while i < len(nodes):
-                nxt = nodes[i]
-                pst = None
-                if isinstance(nxt, str) and nxt.startswith('<pointer:'):
-                    e = nxt.find('>')
-                    if e != len(nxt) - 1:
-                        pst = nxt[e+1:]
-                        nxt = nxt[:e+1]
-                    nodes_.append(nxt)
-                    if pst is not None:
-                        nodes_.append(pst)
-                else:
-                    nodes_.append(nxt)
-                i += 1
-            nodes = nodes_
+        # print(">>>>>>>> nodes2: ", nodes, "\n")
 
-            i = 1
-            nodes_ = [nodes[0]]
-            while i < len(nodes):
-                nxt = nodes[i]
-                if isinstance(nxt, str) and nxt.startswith('<pointer:'):
-                    nxt = 'z' + nxt[9:-1]
-                    fol = nodes[i+1]
-                    # is not expansion
-                    if isinstance(fol, str) and (fol.startswith(':') or (fol == ')')):
-                        nodes_.append(nxt)
-                    else:
-                        if self.remove_pars:
-                            nodes_.append('(')
-                        else:
-                            if nodes_[-1] != '(':
-                                nodes_.append('(')
-                                # pass
-                        nodes_.append(nxt)
-                        nodes_.append('/')
-                else:
+        i = 0
+        nodes_ = []
+        while i < len(nodes):
+            nxt = nodes[i]
+            pst = None
+            if isinstance(nxt, str) and nxt.startswith('<pointer:'):
+                e = nxt.find('>')
+                if e != len(nxt) - 1:
+                    pst = nxt[e+1:]
+                    nxt = nxt[:e+1]
+                nodes_.append(nxt)
+                if pst is not None:
+                    nodes_.append(pst)
+            else:
+                nodes_.append(nxt)
+            i += 1
+        nodes = nodes_
+
+        # print(">>>>>>>> nodes2.5: ", nodes, "\n")
+
+        # i = 1
+        # nodes_ = [nodes[0]]
+        i = 0
+        nodes_ = []
+        while i < len(nodes):
+            nxt = nodes[i]
+            if (i < len(nodes) - 1) and isinstance(nxt, str) and nxt.startswith('<pointer:'):
+                nxt = 'z' + nxt[9:-1]
+                fol = nodes[i+1]
+                # is not expansion
+                if isinstance(fol, str) and (fol.startswith(':') or (fol == ')')):
                     nodes_.append(nxt)
-                i += 1
-            nodes = nodes_
+                else:
+                    if self.remove_pars:
+                        nodes_.append('(')
+                    else:
+                        if len(nodes_) == 0 or nodes_[-1] != '(':
+                            nodes_.append('(')
+                            # pass
+                    nodes_.append(nxt)
+                    nodes_.append('/')
+            else:
+                nodes_.append(nxt)
+            i += 1
+        nodes = nodes_
+
+        # print(">>>>>>>> nodes3: ", nodes, "\n")
 
         i = 0
         nodes_ = []
@@ -243,6 +262,8 @@ class AMRBartTokenizer(MBart50Tokenizer):
             nodes_.append(nodes[-1])
         nodes = nodes_
 
+        # print(">>>>>>>> nodes4: ", nodes, "\n")
+
         i = 0
         nodes_ = []
         while i < (len(nodes)):
@@ -255,6 +276,8 @@ class AMRBartTokenizer(MBart50Tokenizer):
                 nodes_.append(nodes[i])
                 i += 1
         nodes = nodes_
+
+        # print(">>>>>>>> nodes5: ", nodes, "\n")
 
         i = 0
         newvars = 0
@@ -285,6 +308,10 @@ class AMRBartTokenizer(MBart50Tokenizer):
             i += 1
 
         nodes = nodes_
+
+        # print(">>>>>>>> nodes6: ", nodes, "\n")
+
+
         pieces_ = []
         open_cnt = 0
         closed_cnt = 0
@@ -300,6 +327,8 @@ class AMRBartTokenizer(MBart50Tokenizer):
             if open_cnt == closed_cnt:
                 break
         nodes = pieces_ + [')'] * (open_cnt - closed_cnt)
+
+        # print(">>>>>>>> nodes7: ", nodes, "\n")
 
         pieces = []
         for piece in nodes:
@@ -354,6 +383,8 @@ class AMRBartTokenizer(MBart50Tokenizer):
                     if next in (')', 'EDGE', 'MODE'):
                         pieces.append(piece)
 
+        # print(">>>>>>>> pieces1: ", pieces, "\n")
+
         pieces_ = []
         open_cnt = 0
         closed_cnt = 0
@@ -370,7 +401,11 @@ class AMRBartTokenizer(MBart50Tokenizer):
                 break
         pieces = pieces_ + [')'] * (open_cnt - closed_cnt)
 
+        # print(">>>>>>>> pieces2: ", pieces, "\n")
+
         linearized = re.sub(r'\s+', ' ', ' '.join(pieces)).strip()
+
+        # print(">>>>>>>> linearized: ", linearized, "\n")
 
         """
         line = linearized

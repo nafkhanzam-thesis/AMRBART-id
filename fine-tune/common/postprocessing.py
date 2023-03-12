@@ -34,14 +34,16 @@ def token_processing(tok):
 def decode_into_node_and_backreferences(subtoken_ids, tokenizer):
     rex_arg = re.compile(f"^{tokenizer.INIT}(op|snt|conj|prep)")
     rex_spc = re.compile(r"<(s|/s|lit|/lit|stop|unk|pad|mask)>")
-    
+
     # subtoken_ids.insert(1,36)           # add "(" id
     # subtoken_ids.insert(-1, 4839)       # add ")" id
 
     # get strings
     # subtokens = [tokenizer._convert_id_to_token(t) for t in subtoken_ids]
-    subtokens = tokenizer.decode(subtoken_ids)
-    # print("subtokens:", subtokens)
+    subtokens = tokenizer.decode(subtoken_ids, skip_special_tokens=True).split(" ")
+    # subtokens = tokenizer.decode(subtoken_ids)
+
+    # print(">>>>> subtokens1:", subtokens, "\n")
     # fix backreferences
     
     subtoken_backreferences = [max(t - len(tokenizer.vocab), -1) for t in subtoken_ids]
@@ -53,6 +55,7 @@ def decode_into_node_and_backreferences(subtoken_ids, tokenizer):
             if s != ("<pad>")
         ]
     )
+    # print(">>>>> subtokens2:", subtokens, "\n")
 
     # subword collapse
     tokens = []
@@ -102,10 +105,27 @@ def decode_into_node_and_backreferences(subtoken_ids, tokenizer):
             backreferences.append(-1)
             current_token_i += 1
 
+        elif subtok == '(':
+            # if tokens[-1][0] == '(':
+            #     tokens[-1] = tokens[-1] + subtok
+            # else:
+                tokens.append(subtok)
+                backreferences.append(-1)
+                current_token_i += 1
+
+        elif subtok == ')':
+            # if tokens[-1][0] == ')':
+            #     tokens[-1] = tokens[-1] + subtok
+            # else:
+                tokens.append(subtok)
+                backreferences.append(-1)
+                current_token_i += 1
+
         # in any other case attach to the previous
         else:
             tokens[-1] = tokens[-1] + subtok
 
+    # print(">>>>> tokens1:", tokens, "\n")
     # strip INIT and fix byte-level
     tokens = [
         tokenizer.convert_tokens_to_string(list(t)).lstrip() if isinstance(t, str) else t
@@ -115,6 +135,7 @@ def decode_into_node_and_backreferences(subtoken_ids, tokenizer):
 
     # unks are substituted with thing
     tokens = [t if t != "<unk>" else "thing" for t in tokens]
+    # print(">>>>> tokens2:", tokens, "\n")
 
     old_tokens = tokens
     old_backreferences = backreferences
@@ -194,7 +215,9 @@ def decode_into_node_and_backreferences(subtoken_ids, tokenizer):
             backreferences += backreferences_addition
             break
 
+    # print(">>>>> tokens3:", tokens, "\n")
     tokens = [token_processing(t) for t in tokens]
+    # print(">>>>> tokens4:", tokens, "\n")
 
     shift = 1
     if tokens[1] == "<s>":

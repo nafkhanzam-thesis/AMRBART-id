@@ -51,7 +51,6 @@ python -u main.py \
     --eval_dataloader_num_workers 1 \
     --include_inputs_for_metrics \
     --metric_for_best_model "eval_smatch" \
-    --do_eval \
     --do_predict \
     --ddp_find_unused_parameters False \
     --report_to "tensorboard" \
