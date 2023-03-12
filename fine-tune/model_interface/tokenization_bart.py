@@ -405,8 +405,6 @@ class AMRBartTokenizer(MBart50Tokenizer):
 
         linearized = re.sub(r'\s+', ' ', ' '.join(pieces)).strip()
 
-        # print(">>>>>>>> linearized: ", linearized, "\n")
-
         """
         line = linearized
         # make sure parentheses match
@@ -482,6 +480,7 @@ class AMRBartTokenizer(MBart50Tokenizer):
             return linearized
 
         linearized = fix_text(linearized)
+        # print(">>>>>>>> linearized: ", linearized, "\n")
         g = penman.decode(linearized)
         return g
 
