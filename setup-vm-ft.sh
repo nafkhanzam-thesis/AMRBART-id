@@ -24,3 +24,4 @@ popd
 pip install -r requirements.txt
 
 # ./eval.sh mbart-en-id-smaller-pre-trained-fine-tune
+# ./train.sh mbart-en-id-smaller-pre-trained-fine-tune
