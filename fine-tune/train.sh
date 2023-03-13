@@ -52,7 +52,7 @@ python -u main.py \
     --generation_max_length 1024 \
     --generation_num_beams 5 \
     --label_smoothing_factor 0.1 \
-    --evaluation_strategy "steps" \
+    --evaluation_strategy "epochs" \
     --weight_decay 0.01 \
     --max_grad_norm 0 \
     --max_steps -1 \
@@ -62,7 +62,8 @@ python -u main.py \
     --logging_dir $OutputDir/logs \
     --logging_first_step True \
     --logging_steps 20 \
-    --save_steps 1000 \
+    --save_steps 10000 \
+    --save_strategy "epoch" \
     --save_total_limit 2 \
     --seed 42 \
     --dataloader_num_workers 1 \
