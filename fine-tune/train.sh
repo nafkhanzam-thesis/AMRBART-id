@@ -52,7 +52,7 @@ python -u main.py \
     --generation_max_length 1024 \
     --generation_num_beams 5 \
     --label_smoothing_factor 0.1 \
-    --evaluation_strategy "epochs" \
+    --evaluation_strategy "epoch" \
     --weight_decay 0.01 \
     --max_grad_norm 0 \
     --max_steps -1 \
