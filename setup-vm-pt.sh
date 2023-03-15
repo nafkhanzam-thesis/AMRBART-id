@@ -8,9 +8,12 @@ git lfs install
 
 mkdir models
 pushd models
-  # git clone https://huggingface.co/sshleifer/tiny-mbart
-  wget https://storage.nafkhanzam.com/thesis/backups/mbart-en-id-smaller.tar.gz
-  tar -xvzf mbart-en-id-smaller.tar.gz
+  #~ mBART-large-50
+  git clone https://huggingface.co/facebook/mbart-large-50
+
+  #~ mBART-en-id
+  # wget https://storage.nafkhanzam.com/thesis/backups/mbart-en-id-smaller.tar.gz
+  # tar -xvzf mbart-en-id-smaller.tar.gz
 popd
 
 mkdir datasets
