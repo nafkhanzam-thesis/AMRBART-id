@@ -23,3 +23,5 @@ pushd datasets
 popd
 
 pip install -r requirements.txt
+
+# python main.py mbart-large-50 gpu [continue]
