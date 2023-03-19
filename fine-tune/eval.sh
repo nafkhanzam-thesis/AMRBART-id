@@ -27,7 +27,6 @@ batch_size=5
 python -u main.py \
     --data_dir $DataPath \
     --task "text2amr" \
-    --validation_file $DataPath/dev.jsonl \
     --test_file $DataPath/test.jsonl \
     --output_dir $OutputDir \
     --cache_dir $ModelCache \
@@ -51,7 +50,6 @@ python -u main.py \
     --eval_dataloader_num_workers 1 \
     --include_inputs_for_metrics \
     --metric_for_best_model "eval_smatch" \
-    --do_eval \
     --do_predict \
     --ddp_find_unused_parameters False \
     --report_to "tensorboard" \

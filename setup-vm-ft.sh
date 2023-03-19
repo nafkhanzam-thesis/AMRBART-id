@@ -6,12 +6,17 @@ cd AMRBART-v3
 mkdir models
 pushd models
   #~ Pre-trained model (mbart-large-50)
-  wget https://storage.nafkhanzam.com/thesis/backups/mbart-large-50-pretrained.tar.gz
-  tar -xvzf mbart-large-50-pretrained.tar.gz
+  # wget https://storage.nafkhanzam.com/thesis/backups/mbart-large-50-pretrained.tar.gz
+  # tar -xvzf mbart-large-50-pretrained.tar.gz
 
   #~ Pre-trained model (mbart-en-id-smaller)
   # wget https://storage.nafkhanzam.com/thesis/backups/mbart-en-id-smaller-pre-trained.tar.gz
   # tar -xvzf mbart-en-id-smaller-pre-trained.tar.gz
+
+  #~ Fine-tuned model (mbart-en-id-smaller after 1 epoch)
+  epoch=16
+  wget https://storage.nafkhanzam.com/thesis/backups/mbart-large-50-finetuned-e$epoch.tar.gz
+  tar -xvzf mbart-large-50-finetuned-e$epoch.tar.gz
 
   #~ Fine-tuned model (mbart-en-id-smaller after 1 epoch)
   # epoch=1
@@ -28,4 +33,4 @@ popd
 pip install -r requirements.txt
 
 # ./train.sh mbart-large-50-pretrained
-# ./eval.sh mbart-en-id-smaller-pre-trained-fine-tune
+# ./eval.sh mbart-large-50-finetuned-e16
