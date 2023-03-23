@@ -34,3 +34,6 @@ pip install -r requirements.txt
 
 # ./train.sh mbart-large-50-pretrained
 # ./eval.sh mbart-large-50-finetuned-e16
+
+# ~ Concat
+# IS_CONCAT=1 ./train.sh mbart-en-id-smaller-concat-pre-trained amrbart-concat
