@@ -2,6 +2,7 @@
 import os
 import torch
 import pickle
+import json
 from datasets import load_dataset
 from dataclasses import dataclass
 from transformers.file_utils import PaddingStrategy
@@ -63,18 +64,23 @@ class AMRDataSet(torch.nn.Module):
         print("colums:", column_names)
         padding = "max_length" if self.pad_to_max_length else False
 
+        trim_key = "0trim_key0"
+        trim_counts = {
+            "max_src_length": min(self.max_src_length * 2, 512)
+        }
+
         def tokenize_function(examples):
+            if trim_key not in trim_counts:
+                trim_counts[trim_key] = {
+                    "joint": {"token_count": 0, "data_count": 0},
+                    "srcEtgt": {"token_count": 0, "data_count": 0},
+                    "Esrctgt": {"token_count": 0, "data_count": 0},
+                }
             # Remove empty lines
             amrs = examples["amr"]           # AMR tokens
-            sents = examples["text"]          # text tokens
-            langs = examples["lang"]
-            del examples["lang"]
-            lang_mapper = {
-                'en': "en_XX",
-                'id': "id_ID",
-            }
-            sents = [self.prefix + inp for inp in sents]
-            sents = [lang_mapper[langs[i]] + inp for i, inp in enumerate(sents)]
+            ids = examples["id"]          # text tokens
+            ens = examples["en"]
+            sents = [self.prefix + "id_ID " + id + " en_XX " + en for id, en in zip(ids, ens)]
 
             model_inputs = self.tokenizer(
                 sents, max_length=self.max_src_length, padding=False, truncation=True
@@ -88,6 +94,12 @@ class AMRDataSet(torch.nn.Module):
             ]  # [<s> x1,x2...,xn </s> <AMR> y1,y2,...ym </AMR>]
 
             max_src_length = min(self.max_src_length * 2, 512)
+
+            for itm in joint_ids:
+                if len(itm) > max_src_length:
+                    trim_counts[trim_key]["joint"]["token_count"] += len(itm) - max_src_length
+                    trim_counts[trim_key]["joint"]["data_count"] += 1
+
             joint_ids = [
                 itm[:max_src_length - 1] + [self.tokenizer.amr_eos_token_id]
                 if len(itm) > max_src_length
@@ -101,6 +113,12 @@ class AMRDataSet(torch.nn.Module):
             seg_ids = [itm[:max_src_length] for itm in seg_ids]
             model_inputs["joint_ids"] = joint_ids
             model_inputs["seg_ids"] = seg_ids
+
+            for srci in model_inputs["input_ids"]:
+                if len(srci) > self.max_src_length - 3:
+                    trim_counts[trim_key]["srcEtgt"]["token_count"] += len(srci) - (max_src_length - 3)
+                    trim_counts[trim_key]["srcEtgt"]["data_count"] += 1
+
             srcEtgt_ids = [
                 srci[: self.max_src_length - 4]
                 + [
@@ -118,23 +136,33 @@ class AMRDataSet(torch.nn.Module):
                 ]
                 for srci in model_inputs["input_ids"]
             ]  # [<s> x1,x2...,xn <\s> <AMR> [mask] </AMR>]
+
+            for tgti in model_inputs["labels"]:
+                if len(tgti) > self.max_src_length - 6:
+                    trim_counts[trim_key]["Esrctgt"]["token_count"] += len(tgti) - (max_src_length - 6)
+                    trim_counts[trim_key]["Esrctgt"]["data_count"] += 1
+
             Esrctgt_ids = [
                 [
                     self.tokenizer.vocab["id_ID"],
+                    self.tokenizer.mask_token_id,
+                    self.tokenizer.vocab["en_XX"],
                     self.tokenizer.mask_token_id,
                     self.tokenizer.eos_token_id,
                     self.tokenizer.amr_bos_token_id
                 ]
                 + tgti
-                if len(tgti) <= self.max_src_length - 4
+                if len(tgti) <= self.max_src_length - 6
                 else
                 [
-                    self.tokenizer.bos_token_id,
+                    self.tokenizer.vocab["id_ID"],
+                    self.tokenizer.mask_token_id,
+                    self.tokenizer.vocab["en_XX"],
                     self.tokenizer.mask_token_id,
                     self.tokenizer.eos_token_id,
                     self.tokenizer.amr_bos_token_id
                 ]
-                + tgti[: self.max_src_length - 5]
+                + tgti[: self.max_src_length - 7]
                 + [self.tokenizer.amr_eos_token_id]
                 for tgti in model_inputs["labels"]
             ]  # [<s> [mask] <\s> <AMR> y1,y2...,yn </AMR>]
@@ -157,23 +185,29 @@ class AMRDataSet(torch.nn.Module):
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
 
+        trim_key = "pre-train"
         self.train_dataset = read_or_new_pickle(os.path.join(cache_dir, "pre-train-train_dataset.pkl"), lambda: datasets["train"].map(
-            tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
+            tokenize_function, batched=True, remove_columns=["amr", "id", "en"], num_proc=1
         ), no_cache=self.no_cache)
         print(f"ALL {len(self.train_dataset)} training instances")
 
+        trim_key = "valid"
         self.valid_dataset = read_or_new_pickle(os.path.join(cache_dir, "pre-train-valid_dataset.pkl"), lambda: datasets["validation"].map(
-            tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
+            tokenize_function, batched=True, remove_columns=["amr", "id", "en"], num_proc=1
         ), no_cache=self.no_cache)
         print(f"ALL {len(self.valid_dataset)} validation instances")
 
+        trim_key = "test"
         self.test_dataset = read_or_new_pickle(os.path.join(cache_dir, "pre-train-test_dataset.pkl"), lambda: datasets["test"].map(
-            tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
+            tokenize_function, batched=True, remove_columns=["amr", "id", "en"], num_proc=1
         ), no_cache=self.no_cache)
         print(f"ALL {len(self.test_dataset)} test instances")
 
         print("Dataset Instance Example:", self.train_dataset[0])
 
+        print("Trimmed:", trim_counts)
+        with open(os.path.join(cache_dir, "trim_counts.json"), "w") as f:
+            json.dump(trim_counts, f)
 
 def padding_func(features, padding_side="right", pad_token_id=1, key="label"):
     assert key in features[0].keys(), f"{key} not in {features[0].keys()}"

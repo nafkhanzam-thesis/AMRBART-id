@@ -7,10 +7,15 @@ from argparse import Namespace
 model_name = sys.argv[1]
 is_gpu = len(sys.argv) >= 3 and sys.argv[2].lower() != 'cpu'
 should_continue = len(sys.argv) >= 4 and sys.argv[3].lower() == 'continue'
+is_concat = True
 print('is_gpu', is_gpu)
 print('should_continue', should_continue)
+print('is_concat', is_concat)
 
-dataset_dir = '../../datasets/amrbart-new'
+if is_concat:
+  dataset_dir = '../../datasets/amrbart-concat'
+else:
+  dataset_dir = '../../datasets/amrbart-new'
 
 output_dir = f'../outputs/{model_name}'
 os.makedirs(output_dir, exist_ok=True)
@@ -35,6 +40,7 @@ args = Namespace(
   freeze_embeds=False,
   freeze_encoder=False,
   gradient_accumulation_steps=batch_size,
+  is_concat=is_concat,
   joint_train_interval=1,
   learning_rate=5e-07,
   line_by_line=False,

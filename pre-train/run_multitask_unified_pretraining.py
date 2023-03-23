@@ -31,7 +31,6 @@ import random
 import re
 import shutil
 from typing import Dict, List, Any, Tuple
-from data_interface.dataset import AMRDataSet, DataCollatorForSeq2Seq
 from model_interface.modeling_bart import MBartForConditionalGeneration as BartForConditionalGeneration
 from model_interface.tokenization_bart import AMRBartTokenizer
 
@@ -1242,6 +1241,11 @@ def main(args=None):
 
     if args.local_rank == 0:
         torch.distributed.barrier()  # End of barrier to make sure only the first process in distributed training download model & vocab
+
+    if args.is_concat:
+        from data_interface_concat.dataset import AMRDataSet, DataCollatorForSeq2Seq
+    else:
+        from data_interface.dataset import AMRDataSet, DataCollatorForSeq2Seq
 
     logger.info("Training/evaluation parameters %s", args)
 

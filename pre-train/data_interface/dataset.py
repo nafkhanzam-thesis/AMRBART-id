@@ -63,7 +63,18 @@ class AMRDataSet(torch.nn.Module):
         print("colums:", column_names)
         padding = "max_length" if self.pad_to_max_length else False
 
+        trim_key = "0trim_key0"
+        trim_counts = {
+            "max_src_length": min(self.max_src_length * 2, 512)
+        }
+
         def tokenize_function(examples):
+            if trim_key not in trim_counts:
+                trim_counts[trim_key] = {
+                    "joint": {"token_count": 0, "data_count": 0},
+                    "srcEtgt": {"token_count": 0, "data_count": 0},
+                    "Esrctgt": {"token_count": 0, "data_count": 0},
+                }
             # Remove empty lines
             amrs = examples["amr"]           # AMR tokens
             sents = examples["text"]          # text tokens
@@ -88,6 +99,12 @@ class AMRDataSet(torch.nn.Module):
             ]  # [<s> x1,x2...,xn </s> <AMR> y1,y2,...ym </AMR>]
 
             max_src_length = min(self.max_src_length * 2, 512)
+
+            for itm in joint_ids:
+                if len(itm) > max_src_length:
+                    trim_counts[trim_key]["joint"]["token_count"] += len(itm) - max_src_length
+                    trim_counts[trim_key]["joint"]["data_count"] += 1
+
             joint_ids = [
                 itm[:max_src_length - 1] + [self.tokenizer.amr_eos_token_id]
                 if len(itm) > max_src_length
@@ -101,6 +118,12 @@ class AMRDataSet(torch.nn.Module):
             seg_ids = [itm[:max_src_length] for itm in seg_ids]
             model_inputs["joint_ids"] = joint_ids
             model_inputs["seg_ids"] = seg_ids
+
+            for srci in model_inputs["input_ids"]:
+                if len(srci) > self.max_src_length - 3:
+                    trim_counts[trim_key]["srcEtgt"]["token_count"] += len(srci) - (max_src_length - 3)
+                    trim_counts[trim_key]["srcEtgt"]["data_count"] += 1
+
             srcEtgt_ids = [
                 srci[: self.max_src_length - 4]
                 + [
@@ -118,6 +141,12 @@ class AMRDataSet(torch.nn.Module):
                 ]
                 for srci in model_inputs["input_ids"]
             ]  # [<s> x1,x2...,xn <\s> <AMR> [mask] </AMR>]
+
+            for tgti in model_inputs["labels"]:
+                if len(tgti) > self.max_src_length - 4:
+                    trim_counts[trim_key]["Esrctgt"]["token_count"] += len(tgti) - (max_src_length - 4)
+                    trim_counts[trim_key]["Esrctgt"]["data_count"] += 1
+
             Esrctgt_ids = [
                 [
                     self.tokenizer.vocab["id_ID"],
