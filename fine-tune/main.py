@@ -15,7 +15,6 @@ import numpy as np
 from dataclasses import dataclass, field
 from typing import Optional
 from datasets import load_dataset, load_metric, load_from_disk
-from data_interface.dataset import AMR2TextDataSet, AMRParsingDataSet, DataCollatorForAMR2Text, DataCollatorForAMRParsing
 from model_interface.modeling_bart import MBartForConditionalGeneration as BartForConditionalGeneration
 from model_interface.tokenization_bart import AMRBartTokenizer
 from common.options import DataTrainingArguments, ModelArguments, Seq2SeqTrainingArguments
@@ -191,6 +190,11 @@ def main():
             "label_smoothing is enabled but the `prepare_decoder_input_ids_from_labels` method is not defined for"
             f"`{model.__class__.__name__}`. This will lead to loss being calculated twice and will take up more memory"
         )
+    
+    if bool(os.environ.get("IS_CONCAT", "False")):
+        from data_interface_concat.dataset import AMR2TextDataSet, AMRParsingDataSet, DataCollatorForAMR2Text, DataCollatorForAMRParsing
+    else:
+        from data_interface.dataset import AMR2TextDataSet, AMRParsingDataSet, DataCollatorForAMR2Text, DataCollatorForAMRParsing
 
     DataSetCate = AMR2TextDataSet if training_args.task == "amr2text" else AMRParsingDataSet
     raw_datasets = DataSetCate(tokenizer, data_args, model_args)
@@ -208,7 +212,7 @@ def main():
         if data_args.overwrite_cache or not os.path.exists(data_args.data_cache_dir + "/train"):
             with training_args.main_process_first(desc="train dataset map pre-processing"):
                 train_dataset = train_dataset.map(
-                    raw_datasets.tokenize_function,
+                    raw_datasets.create_tokenize_function("train"),
                     batched=True,
                     num_proc=data_args.preprocessing_num_workers,
                     remove_columns=column_names,
@@ -231,7 +235,7 @@ def main():
         if data_args.overwrite_cache or not os.path.exists(data_args.data_cache_dir + "/valid"):
             with training_args.main_process_first(desc="validation dataset map pre-processing"):
                 eval_dataset = eval_dataset.map(
-                    raw_datasets.tokenize_function,
+                    raw_datasets.create_tokenize_function("valid"),
                     batched=True,
                     num_proc=data_args.preprocessing_num_workers,
                     remove_columns=column_names,
@@ -254,7 +258,7 @@ def main():
         if data_args.overwrite_cache or not os.path.exists(data_args.data_cache_dir + "/test"):
             with training_args.main_process_first(desc="prediction dataset map pre-processing"):
                 predict_dataset = predict_dataset.map(
-                    raw_datasets.tokenize_function,
+                    raw_datasets.create_tokenize_function("test"),
                     batched=True,
                     num_proc=data_args.preprocessing_num_workers,
                     remove_columns=column_names,
@@ -265,6 +269,9 @@ def main():
                 predict_dataset.save_to_disk(data_args.data_cache_dir + "/test")
         else:
             predict_dataset = load_from_disk(data_args.data_cache_dir + "/test", keep_in_memory=True)
+
+    with open(os.path.join(training_args.output_dir, "trim_counts.json"), "w") as f:
+        json.dump(raw_datasets.trim_counts, f)
 
     # label_pad_token_id = -100 if data_args.ignore_pad_token_for_loss else tokenizer.pad_token_id
     label_pad_token_id = tokenizer.pad_token_id
