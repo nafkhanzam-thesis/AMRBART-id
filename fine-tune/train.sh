@@ -44,8 +44,8 @@ python -u main.py \
     --optim "adamw_hf" \
     --lr_scheduler_type "polynomial" \
     --warmup_steps 200 \
-    --num_train_epochs 20 \
-    --early_stopping 10 \
+    --num_train_epochs 16 \
+    --early_stopping 4 \
     --max_source_length 400 \
     --max_target_length 1024 \
     --val_max_target_length 1024 \

@@ -191,7 +191,7 @@ def main():
             f"`{model.__class__.__name__}`. This will lead to loss being calculated twice and will take up more memory"
         )
     
-    if bool(os.environ.get("IS_CONCAT", "False")):
+    if bool(os.environ.get("IS_CONCAT", "False") == "True"):
         from data_interface_concat.dataset import AMR2TextDataSet, AMRParsingDataSet, DataCollatorForAMR2Text, DataCollatorForAMRParsing
     else:
         from data_interface.dataset import AMR2TextDataSet, AMRParsingDataSet, DataCollatorForAMR2Text, DataCollatorForAMRParsing
