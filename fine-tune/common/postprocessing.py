@@ -121,6 +121,11 @@ def decode_into_node_and_backreferences(subtoken_ids, tokenizer):
                 backreferences.append(-1)
                 current_token_i += 1
 
+        elif subtok == '-':
+            tokens.append(subtok)
+            backreferences.append(-1)
+            current_token_i += 1
+
         # in any other case attach to the previous
         else:
             tokens[-1] = tokens[-1] + subtok
