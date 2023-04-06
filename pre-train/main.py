@@ -7,7 +7,7 @@ from argparse import Namespace
 model_name = sys.argv[1]
 is_gpu = len(sys.argv) >= 3 and sys.argv[2].lower() != 'cpu'
 should_continue = len(sys.argv) >= 4 and sys.argv[3].lower() == 'continue'
-is_concat = True
+is_concat = False
 print('is_gpu', is_gpu)
 print('should_continue', should_continue)
 print('is_concat', is_concat)

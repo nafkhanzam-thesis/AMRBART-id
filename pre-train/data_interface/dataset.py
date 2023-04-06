@@ -2,6 +2,7 @@
 import os
 import torch
 import pickle
+import json
 from datasets import load_dataset
 from dataclasses import dataclass
 from transformers.file_utils import PaddingStrategy
@@ -186,22 +187,29 @@ class AMRDataSet(torch.nn.Module):
         if not os.path.exists(cache_dir):
             os.makedirs(cache_dir)
 
+        trim_key = "pre-train"
         self.train_dataset = read_or_new_pickle(os.path.join(cache_dir, "pre-train-train_dataset.pkl"), lambda: datasets["train"].map(
             tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
         ), no_cache=self.no_cache)
         print(f"ALL {len(self.train_dataset)} training instances")
 
+        trim_key = "valid"
         self.valid_dataset = read_or_new_pickle(os.path.join(cache_dir, "pre-train-valid_dataset.pkl"), lambda: datasets["validation"].map(
             tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
         ), no_cache=self.no_cache)
         print(f"ALL {len(self.valid_dataset)} validation instances")
 
+        trim_key = "test"
         self.test_dataset = read_or_new_pickle(os.path.join(cache_dir, "pre-train-test_dataset.pkl"), lambda: datasets["test"].map(
             tokenize_function, batched=True, remove_columns=["amr", "text"], num_proc=1
         ), no_cache=self.no_cache)
         print(f"ALL {len(self.test_dataset)} test instances")
 
         print("Dataset Instance Example:", self.train_dataset[0])
+
+        print("Trimmed:", trim_counts)
+        with open(os.path.join(cache_dir, "trim_counts.json"), "w") as f:
+            json.dump(trim_counts, f)
 
 
 def padding_func(features, padding_side="right", pad_token_id=1, key="label"):

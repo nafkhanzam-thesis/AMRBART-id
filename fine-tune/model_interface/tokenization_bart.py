@@ -146,7 +146,7 @@ class AMRBartTokenizer(MBart50Tokenizer):
     def decode_amr(self, tokens, restore_name_ops=None, prefix="unk"):
         # print()
         # print()
-        # # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+        # print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
         # print()
         # print()
         try:
