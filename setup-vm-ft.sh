@@ -36,8 +36,9 @@ popd
 pip install -r requirements.txt
 
 # ~ AMRBART
-# ./train.sh mbart-en-id-smaller-pretrained
-# ./eval.sh mbart-large-50-finetuned
+# ./train.sh mbart-en-id-smaller-pretrained amrbart-new
+# ./eval.sh mbart-large-50-finetuned amrbart-new
+# ./inference.sh mbart-large-50-finetuned wrete
 
 # ~ Concat
 # IS_CONCAT=1 ./train.sh mbart-en-id-smaller-concat-pretrained amrbart-concat
