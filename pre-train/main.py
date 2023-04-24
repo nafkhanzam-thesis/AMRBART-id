@@ -85,4 +85,12 @@ args = Namespace(
   weight_decay=0.0
 )
 
+import time
+
+start = time.time()
 run_multitask_unified_pretraining.main(args)
+end = time.time()
+
+print("START:", start)
+print("END:", end)
+print("ELAPSED:", end-start)

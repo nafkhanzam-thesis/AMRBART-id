@@ -517,4 +517,12 @@ def _mp_fn(index):
 
 
 if __name__ == "__main__":
+    import time
+
+    start = time.time()
     main()
+    end = time.time()
+
+    print("START:", start)
+    print("END:", end)
+    print("ELAPSED:", end-start)
