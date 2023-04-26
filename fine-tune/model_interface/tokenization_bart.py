@@ -176,7 +176,7 @@ class AMRBartTokenizer(MBart50Tokenizer):
             return graph, status, (nodes, backreferences)
         except Exception as e:
             print('Reconnection 2 failure', file=sys.stderr)
-            print('e', e, file=sys.stderr)
+            print(get_traceback(e), file=sys.stderr)
             # print('nodes', nodes, file=sys.stderr)
             # print('backreferences', backreferences, file=sys.stderr)
             # print('graph', graph, file=sys.stderr)
