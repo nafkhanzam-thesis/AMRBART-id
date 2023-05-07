@@ -9,7 +9,8 @@ Model=$1
 ModelCache=$RootDir/.cache
 DataCache=$DataPath/.cache/dump-amrparsing
 
-OutputDir=${RootDir}/outputs/infer-$Model
+OutputDirLeaf=${3:-infer-$Model}
+OutputDir=${RootDir}/outputs/$OutputDirLeaf
 
 if [ ! -d ${OutputDir} ];then
   mkdir -p ${OutputDir}
@@ -28,7 +29,7 @@ batch_size=5
 python -u main.py \
     --data_dir $DataPath \
     --task "text2amr" \
-    --test_file $DataPath/inference.jsonl \
+    --test_file $DataPath/dev.jsonl \
     --output_dir $OutputDir \
     --cache_dir $ModelCache \
     --data_cache_dir $DataCache \

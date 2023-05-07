@@ -18,8 +18,8 @@ pushd models
   # tar -xvzf mbart-large-50-pretrained.tar.gz
 
   #~ Pre-trained model (mbart-en-id-smaller)
-  wget https://storage.nafkhanzam.com/thesis/models/mbart-en-id-smaller-pretrained.tar.gz
-  tar -xvzf mbart-en-id-smaller-pretrained.tar.gz
+  # wget https://storage.nafkhanzam.com/thesis/models/mbart-en-id-smaller-pretrained.tar.gz
+  # tar -xvzf mbart-en-id-smaller-pretrained.tar.gz
 
   #~ Fine-tuned model (mbart-en-id-smaller after 16 epoch)
   # wget https://storage.nafkhanzam.com/thesis/models/mbart-large-50-finetuned.tar.gz
@@ -28,12 +28,15 @@ pushd models
   #~ Pre-trained concat model (mbart-en-id-smaller)
   # wget https://storage.nafkhanzam.com/thesis/models/mbart-en-id-smaller-concat-pretrained.tar.gz
   # tar -xvzf mbart-en-id-smaller-concat-pretrained.tar.gz
+
+  wget https://storage.nafkhanzam.com/thesis/models/mbart-en-id-smaller-concat-finetuned.tar.gz
+  tar -xvzf mbart-en-id-smaller-concat-finetuned.tar.gz
 popd
 
 mkdir datasets
 pushd datasets
-  wget https://storage.nafkhanzam.com/thesis/backups/amrbart-datasets.tar.gz
-  tar -xvzf amrbart-datasets.tar.gz
+  wget https://storage.nafkhanzam.com/thesis/backups/amrbart-amr3-augfil.tar.gz
+  tar -xvzf amrbart-amr3-augfil.tar.gz
 popd
 
 pip install -r requirements.txt
