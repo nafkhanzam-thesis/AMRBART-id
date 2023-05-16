@@ -81,7 +81,8 @@ class AMRParsingDataSet(Dataset):
             amrs = examples["amr"]
             ids = examples["id"]
             ens = examples["en"]
-            txt = ["id_ID " + id + " en_XX " + (en if dataset_type == "train" else "<mask>") for id, en in zip(ids, ens)]
+            # txt = ["id_ID " + id + " en_XX " + (en if dataset_type == "train" else "<mask>") for id, en in zip(ids, ens)]
+            txt = ["id_ID " + id + " en_XX " + en for id, en in zip(ids, ens)]
             
             amr_ids = [self.tokenizer.tokenize_amr(itm.split())[:self.max_tgt_length-2] + [self.tokenizer.amr_eos_token_id] for itm in amrs]
             
