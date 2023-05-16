@@ -29,7 +29,7 @@ batch_size=5
 python -u main.py \
     --data_dir $DataPath \
     --task "text2amr" \
-    --test_file $DataPath/dev.jsonl \
+    --test_file $DataPath/inference.jsonl \
     --output_dir $OutputDir \
     --cache_dir $ModelCache \
     --data_cache_dir $DataCache \

@@ -29,8 +29,8 @@ pushd models
   # wget https://storage.nafkhanzam.com/thesis/models/mbart-en-id-smaller-concat-pretrained.tar.gz
   # tar -xvzf mbart-en-id-smaller-concat-pretrained.tar.gz
 
-  wget https://storage.nafkhanzam.com/thesis/models/mbart-en-id-smaller-concat-finetuned.tar.gz
-  tar -xvzf mbart-en-id-smaller-concat-finetuned.tar.gz
+  # wget https://storage.nafkhanzam.com/thesis/models/model-amrbart-amr2.tar.gz
+  # tar -xvzf model-amrbart-amr2.tar.gz
 popd
 
 mkdir datasets
