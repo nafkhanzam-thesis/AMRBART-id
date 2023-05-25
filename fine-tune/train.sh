@@ -2,14 +2,14 @@ export CUDA_VISIBLE_DEVICES=0
 RootDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 RootDir=$RootDir/..
 
-Dataset=${2:-amrbart-new}
-DataPath=$RootDir/ds/$Dataset
+DataPath=$RootDir/ds/$2
+ValPath=$RootDir/ds/$3
 
 Model=$1
 ModelCache=$RootDir/.cache
 DataCache=$DataPath/.cache/dump-amrparsing
 
-OutputDir=${RootDir}/outputs/$Model-fine-tune
+OutputDir=${RootDir}/outputs/$Model-fted
 
 if [ ! -d ${OutputDir} ];then
   mkdir -p ${OutputDir}
@@ -29,8 +29,8 @@ python -u main.py \
     --data_dir $DataPath \
     --task "text2amr" \
     --train_file $DataPath/train.jsonl \
-    --validation_file $DataPath/dev.jsonl \
-    --test_file $DataPath/test.jsonl \
+    --validation_file $ValPath/dev.jsonl \
+    --test_file $ValPath/test.jsonl \
     --output_dir $OutputDir \
     --cache_dir $ModelCache \
     --data_cache_dir $DataCache \
@@ -45,7 +45,7 @@ python -u main.py \
     --lr_scheduler_type "polynomial" \
     --warmup_steps 200 \
     --num_train_epochs 16 \
-    --early_stopping 4 \
+    --early_stopping 16 \
     --max_source_length 400 \
     --max_target_length 1024 \
     --val_max_target_length 1024 \
@@ -77,4 +77,4 @@ python -u main.py \
     --do_predict \
     --ddp_find_unused_parameters False \
     --report_to "tensorboard" \
-    --dataloader_pin_memory True 2>&1 | tee $OutputDir/run.log
+    --dataloader_pin_memory True 2>&1 | tee $OutputDir/run-$(date +"%Y-%m-%dT%H:%M:%S%:z").log

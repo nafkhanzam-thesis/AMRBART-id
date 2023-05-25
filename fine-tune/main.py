@@ -359,7 +359,7 @@ def main():
 
         try:
             smatch_score = calculate_smatch(
-                data_args.data_dir + f"/{prefix}-gold.amr", output_prediction_file
+                data_args.data_dir + f"/../{prefix}-gold.amr", output_prediction_file
             )
         except BaseException as e:
             print('An exception occurred on calculating smatch')
