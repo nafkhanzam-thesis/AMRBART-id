@@ -13,9 +13,9 @@ print('should_continue', should_continue)
 print('is_concat', is_concat)
 
 if is_concat:
-  dataset_dir = '../../datasets/amrbart-concat'
+  dataset_dir = '../../ds/amrbart-concat'
 else:
-  dataset_dir = '../../datasets/amrbart-amr3-augfil'
+  dataset_dir = '../../ds/amrbart-amr3-augfil'
 
 output_dir = f'../outputs/{model_name}'
 os.makedirs(output_dir, exist_ok=True)

@@ -3,7 +3,7 @@ RootDir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 RootDir=$RootDir/..
 
 Dataset=${2:-wrete}
-DataPath=$RootDir/datasets/$Dataset
+DataPath=$RootDir/ds/$Dataset
 
 Model=$1
 ModelCache=$RootDir/.cache

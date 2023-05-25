@@ -29,14 +29,14 @@ pushd models
   # wget https://storage.nafkhanzam.com/thesis/models/mbart-en-id-smaller-concat-pretrained.tar.gz
   # tar -xvzf mbart-en-id-smaller-concat-pretrained.tar.gz
 
-  # wget https://storage.nafkhanzam.com/thesis/models/model-amrbart-amr2.tar.gz
-  # tar -xvzf model-amrbart-amr2.tar.gz
+  wget https://storage.nafkhanzam.com/thesis/models/mbart-en-id-smaller-concat-pretrained.tar.gz
+  tar -xvzf mbart-en-id-smaller-concat-pretrained.tar.gz
 popd
 
 mkdir datasets
 pushd datasets
-  wget https://storage.nafkhanzam.com/thesis/backups/amrbart-amr3-augfil.tar.gz
-  tar -xvzf amrbart-amr3-augfil.tar.gz
+  wget https://storage.nafkhanzam.com/thesis/backups/amrbart-concat-aug.tar.gz
+  tar -xvzf amrbart-concat-aug.tar.gz
 popd
 
 pip install -r requirements.txt

@@ -25,6 +25,8 @@ popd
 
 mkdir datasets
 pushd datasets
+  wget https://storage.nafkhanzam.com/thesis/ds.tar.xz
+  tar xvJf ds.tar.xz
   wget https://storage.nafkhanzam.com/thesis/backups/amrbart-datasets.tar.gz
   tar -xvzf amrbart-datasets.tar.gz
 popd
