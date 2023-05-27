@@ -5,8 +5,8 @@ from amrlib.evaluate.smatch_enhanced import compute_smatch, get_entries
 from sklearn.metrics import roc_curve, roc_auc_score
 
 #~ Penelitian Putra (2022)
-# tn, fp, fn, tp = 9, 10, 3, 28
-tn, fp, fn, tp = 10, 9, 2, 29
+tn, fp, fn, tp = 9, 10, 3, 28
+# tn, fp, fn, tp = 10, 9, 2, 29
 precision = tp / (tp+fp)
 recall = tp / (tp+fn)
 f1 = 2*precision*recall/(precision+recall)
