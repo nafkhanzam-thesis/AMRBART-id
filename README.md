@@ -8,3 +8,7 @@
 ## Citation
 
 Alzamzami, Moch. Nafkhan. (2023): _Abstract Meaning Representation Parser Development for Cross-lingual Indonesian-English with BART, Input Concatenation, and Dataset Augmentation_, Master’s Thesis, Institut Teknologi Bandung.
+
+## Contact me for more details
+
+nafkhanalzamzami@gmail.com
